@@ -1,55 +1,4 @@
-﻿var popSpeed=1000,proSpeed=2000,eventSpeed=5000;
-var population=0,popLimit=20,lastWorker=3;
-var production={product1Num:0,product2Num:20,product3Num:20,jobless:0};
-var building={building1:false,building2:false};
-var elementBtnAdd={worker1:document.getElementById('btn1ProAdd'),
-				   worker2:'xzx',
-				   worker3:'xzx'};
-var elementBtnSub={worker1:document.getElementById('btn1ProSub'),
-				   worker2:'xzx',
-				   worker3:'xzx'};
-var elementPro={product1Num:document.getElementById('product1s'),//在字典里就获取element,但此时body未加载
-				product2Num:document.getElementById('product2s'),
-				product3Num:document.getElementById('product3s'),
-			 	jobless:document.getElementById('jobless')};
-var worker={worker1:0,worker2:0,worker3:0};
-var elementWorkNum={worker1:document.getElementById('worker1'),
-				    worker2:'xzx',
-				    worker3:'xzx'};//有xzx的都是之后创建的元素，需要创建时赋值
-var bld2Num={building1:2,
-			 building2:3};
-var num2WkrName={building1:'worker2Num',
-			 	building2:'worker3Num'};
-var workersTable={// 注意此变量的一级下标worker1,worker2等等必须与worker完全相同
-	worker1:{//二级下标product1Num,product2Num等等必须与production完全相同
-		product1Num:5,
-		product2Num:0,
-		product3Num:0
-	},
-	worker2:{
-		product1Num:0,
-		product2Num:2,
-		product3Num:0
-	},
-	worker3:{
-		product1Num:0,
-		product2Num:-1,
-		product3Num:2
-	}
-};
-var buildingsTable={
-	building1:{
-		product1Num:0,
-		product2Num:5,
-		product3Num:0
-	},
-	building2:{
-		product1Num:0,
-		product2Num:1,
-		product3Num:5
-	}
-};
-function miuGenerate(x)//根据最大人口与当前人口差值生成μ
+﻿function miuGenerate(x)//根据最大人口与当前人口差值生成μ
 {
 	var ans;
 	if(x>=1&&x<=15) ans=x-4.5;
@@ -237,7 +186,6 @@ function build(name)
 			workerDiv.innerHTML=workerName+//不要换行，有莫名其妙的bug。也不要改，调语法累死
 								'： <button class="btnSubClass" onclick="WorkersAdd(-5,'+'\'worker'+num+'\')"><span class="sub"></span></button><button class="btnSubClass" onclick="WorkersAdd(-1,'+'\'worker'+num+'\')"><span class="sub"></span></button>\n<span id="worker'+num+'">'
 								+workerNum+'</span>\n<button class="btnAddClass" onclick="WorkersAdd(1,'+'\'worker'+num+'\')"><span class="add"></span></button><button class="btnAddClass" onclick="WorkersAdd(5,'+'\'worker'+num+'\')"><span class="add"></span></button>';
-			var workerDivs=document.querySelectorAll('div[id$="s"]');
 			document.body.insertBefore(workerDiv,document.getElementById("workerLast"));/*在worker的最后
 			有一个workerLast标签，标记了worker的底线，新的worker从此前插入*/
 			elementWorkNum['worker'+num]=document.getElementById('worker'+num);

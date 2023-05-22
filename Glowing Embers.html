@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>新文明</title>
+<title>余烬之光</title>
     <style>
         .btnSubClass, .btnAddClass
 		{/*干掉按钮边框，按钮底色*/
@@ -94,12 +94,18 @@
     </style>
 </head>
 <body onload="initialization()">
-	<div id="production" style="border:2px solid black; width:150px; padding:10px 10px; position:fixed; right:200px;">
-		<div>population：<span id="popNum">0</span>/<span id="maxPop"></span></div>
-		<div>jobless：<span id="jobless"></span></div>
-		<div>product1：<span id="product1s"></span></div>
-		<div>product2：<span id="product2s"></span></div>
-		<div>product3：<span id="product3s"></span></div>
+	<div id="right" style="position:fixed; right:200px;"><!--将html分区，这是右侧栏-->
+		<div id="production" style="border:2px solid black; width:150px; padding:10px 10px; position:fixed;">
+			<div>population：<span id="popNum">0</span>/<span id="maxPop"></span></div>
+			<div>jobless：<span id="jobless"></span></div>
+			<div>product1：<span id="product1s"></span></div>
+			<div>product2：<span id="product2s"></span></div>
+			<div>product3：<span id="product3s"></span></div>
+		</div>
+		<br>
+		<div id="buffs" style="border:2px solid black; width:150px; padding:10px 10px; position:fixed;margin-top:200px;">
+			<div id="buffLast"></div>
+		</div>
 	</div>
 	<div id="worker1s">
 		worker1Num：
@@ -117,6 +123,9 @@
 	<button onclick="popSub(11)">Subpop</button>
 	<br>
 	<button onclick="eventsDisplay()">event</button>
+	<br>
+	<button onclick="addEventsBuff(1)">buffTest</button>
+<script src="./variates.js"></script>
 <script src="./producing.js"></script>
 <script src="./events.js"></script>
 </body>

@@ -1,24 +1,4 @@
-﻿var randomEventsPr={event1:10,	
-					event2:10,
-				   	event3:10};
-var randomEventsAttribute={
-	event1:{//事件标题 内容 类型
-		title:'event1',
-		content:'population-5',
-		type:1
-	},
-	event2:{
-		title:'event2',
-		content:'product1+5',
-		type:1
-	},
-	event3:{
-		title:'event3',
-		content:'test3',
-		type:2
-	}
-};
-function performConfirmEvents(randomEventNum)
+﻿function performConfirmEvents(randomEventNum)
 {
 	switch (randomEventNum)//根据时间编号产生事件效果
 	{
@@ -43,8 +23,8 @@ function randomEvents()
 	var i=1;
 	for(var key in randomEventsPr)//和人口增加的思路类似，但概率是预设的
 	{
-		prSum+=randomEventsPr[key];
-		prPrefixSum[i]=Number(prPrefixSum[i-1]+randomEventsPr[key]);
+		prSum+=randomEventsPr[key]*(1+0.01*eventsBuff[key]);//原始概率+buff
+		prPrefixSum[i]=Number(prPrefixSum[i-1]+randomEventsPr[key]*(1+0.01*eventsBuff[key]));
 		i++;
 	}
 	coefficient=1/prSum;
@@ -64,6 +44,18 @@ function randomEvents()
 	}
 	return randomEventNum;
 }
+function addEventsBuff(num)
+{
+	if(!document.getElementById('buff'+num))
+	{
+		eventsBuff[eventsBuffsEffect['buff'+num]['eventNum']]+=eventsBuffsEffect['buff'+num]['effect'];
+		var buffDiv=document.createElement('div');//创建新buff 元素
+		buffDiv.setAttribute('id','buff'+num);
+		buffDiv.innerHTML=buffsContent['buff'+num];
+		document.getElementById("buffs").insertBefore(buffDiv,document.getElementById("buffLast"));/*insertbefore的. 前需要是buff
+		last的上一级，假如bufflast被嵌套了*/
+	}
+}
 function eventsDisplay()
 {
 	if(document.getElementById('eventsPopup') == null)
@@ -71,7 +63,7 @@ function eventsDisplay()
 		var randomEventsNum=randomEvents();//产生时间编号
 		if(randomEventsAttribute['event'+randomEventsNum]['type']==1)
 		{
-			performConfirmEvents(randomEventsNum);//确认类型事件 的效果
+			performConfirmEvents(randomEventsNum);//confirm事件 的效果
 			var popup = document.createElement('div');
     		popup.setAttribute('id', 'eventsPopup'); // 添加id
     		popup.style.position = 'fixed';
