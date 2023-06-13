@@ -1,21 +1,6 @@
-﻿function performConfirmEvents(randomEventNum)
+﻿function randomEvents()
 {
-	switch (randomEventNum)//根据时间编号产生事件效果
-	{
-		case 1:
-			popSub(5);
-			break;
-		case 2:
-			production['product1Num']+=5;
-			elementPro['product1Num'].innerText=production['product1Num'];
-			break;
-		default:
-			break;
-	}
-}
-function randomEvents()
-{
-	var prSum=0,coefficient,randomEventNum;//randomEventNum是随机事件编号
+	var prSum=0,coefficient,randomEventsNum;//randomEventsNum是随机事件编号
 	var randomEventsLength=Object.keys(randomEventsPr).length;//获取字典的大小
 	//prPrefixSum
 	prPrefixSum=new Array(randomEventsLength+1);
@@ -40,9 +25,9 @@ function randomEvents()
 	for(var i=1;i<=randomEventsLength;i++)
 	{
 		if(prPrefixSum[i]>=randomPr)
-			{randomEventNum=i;break;}
+			{randomEventsNum=i;break;}
 	}
-	return randomEventNum;
+	return randomEventsNum;
 }
 function addEventsBuff(num)
 {
@@ -52,15 +37,84 @@ function addEventsBuff(num)
 		var buffDiv=document.createElement('div');//创建新buff 元素
 		buffDiv.setAttribute('id','buff'+num);
 		buffDiv.innerHTML=buffsContent['buff'+num];
+		if(eventsBuffsEffect['buff'+num]['duration']!=-1)
+		{
+			var h=Math.floor(eventsBuffsEffect['buff'+num]['duration']/60),m=eventsBuffsEffect['buff'+num]['duration']%60;
+			buffDiv.innerHTML+=' <span class="timer">'+h+':'+m+':0</span>';
+		}
 		document.getElementById("buffs").insertBefore(buffDiv,document.getElementById("buffLast"));/*insertbefore的. 前需要是buff
 		last的上一级，假如bufflast被嵌套了*/
+		if(eventsBuffsEffect['buff'+num]['duration']!=-1)
+		{
+			setTimeout(function(num){document.getElementById('buff'+num).remove();},eventsBuffsEffect['buff'+num]['duration']*1000*60,num);
+			//写这个破 时间结束就删除的玩意花了我一个晚上 
+			//function里不能直接传参数会被立即执行 可以在setTimeout最后写上参数
+		}
 	}
+}
+function performConfirmEvents(randomEventsNum)
+{
+	switch (randomEventsNum)//根据时间编号产生事件效果
+	{
+		case 1:
+			popSub(5);
+			break;
+		case 2:
+			production['product1Num']+=5;
+			elementPro['product1Num'].innerText=production['product1Num'];
+			break;
+		default:
+			break;
+	}
+}
+function performSeletiveEvents(eventNum,btnNum)
+{
+	switch (eventNum)//根据事件 和 选择产生效果
+	{
+		case 3://事件要用原本的事件号
+			switch (btnNum)
+			{
+				case 1:
+					inevitableEvents.push(1);//给预备序列里添加必然事件
+					break;
+				case 2:
+					alert('12');
+					break;
+				default:
+					break;
+			}
+			break;
+		case 4:
+			switch (btnNum)
+			{
+				case 1:
+					alert('21');
+					break;
+				case 2:
+					alert('22');
+					break;
+				case 3:
+					alert('23');
+					break;
+				default:
+					break;
+			}
+			break;
+		default:
+			break;
+	}
+	document.getElementById('eventsPopup').remove();//移除popup
 }
 function eventsDisplay()
 {
 	if(document.getElementById('eventsPopup') == null)
 	{
 		var randomEventsNum=randomEvents();//产生时间编号
+		if(inevitableEvents.length!=0)
+		{
+			randomEventsNum=inevitableEvents.pop();//必然事件较随机事件概率更高
+		}
+		//randomEventsNum=4;
 		if(randomEventsAttribute['event'+randomEventsNum]['type']==1)
 		{
 			performConfirmEvents(randomEventsNum);//confirm事件 的效果
@@ -114,10 +168,108 @@ function eventsDisplay()
 			// 将popup添加到body中
 			document.body.appendChild(popup);
 		}
-		else
+		else if(randomEventsAttribute['event'+randomEventsNum]['type']==2)//选择性事件
 		{
-			alert("waits");
+			var popup = document.createElement('div');
+    		popup.setAttribute('id', 'eventsPopup'); // 添加id
+    		popup.style.position = 'fixed';
+    		popup.style.top = '50%';
+    		popup.style.left = '50%';
+    		popup.style.transform = 'translate(-50%, -50%)';
+    		popup.style.backgroundColor = 'white';
+			popup.style.padding = '200px';
+			popup.style.border = '1px solid black';
+			popup.style.zIndex = '9999';
+			// create a new div element for the text
+			var titleDiv = document.createElement('div');//标题
+			titleDiv.innerText = randomEventsAttribute['event'+randomEventsNum]['title'];
+			titleDiv.style.position = 'absolute';
+			titleDiv.style.top = '10px';
+			//titleDiv.style.left = '50px';
+			titleDiv.style.fontSize = '22px';//字体大小
+			titleDiv.style.left = '0';
+			titleDiv.style.right = '0';
+			titleDiv.style.textAlign = 'center';
+			//titleDiv.style.wordWrap = 'break-word';//自动换行
+			//titleDiv.style.maxWidth = 'calc(100% - 90px)';//难不成你个标题还换行？
+			popup.appendChild(titleDiv);//将此文本加入到popup中
+			//------------------------------------分割线----------------------------------------
+			var contentDiv = document.createElement('div');//内容
+			contentDiv.innerText = randomEventsAttribute['event'+randomEventsNum]['content'];
+			contentDiv.style.position = 'absolute';
+			contentDiv.style.top = '70px';
+			contentDiv.style.left = '50px';
+			contentDiv.style.fontSize = '17px';//字体大小
+			contentDiv.style.wordWrap = 'break-word';//自动换行
+			contentDiv.style.maxWidth = 'calc(100% - 100px)';//距离右边界n px时换行,n=-50时达到右边界，
+			popup.appendChild(contentDiv);//将此文本加入到popup中
+			//------------------------------------分割线----------------------------------------
+			var buttonCount = seletiveEventsSeletion['event'+randomEventsNum]['num']; // 按钮数量
+			// 创建按钮容器
+			var buttonContainer = document.createElement('div');
+			buttonContainer.style.position = 'absolute';
+			buttonContainer.style.bottom = '10px';
+			buttonContainer.style.left = '0';
+			buttonContainer.style.right = '0';
+			buttonContainer.style.textAlign = 'center';
+
+			// 创建按钮
+			for (var i=1;i<=buttonCount;i++)
+			{
+				var button = document.createElement('button');
+				button.innerText = seletiveEventsSeletion['event'+randomEventsNum]['btn'+i];
+				button.style.height = '25px';
+				button.style.marginTop='5px';
+				button.style.background = 'none';
+				button.style.border = '1px solid black';
+				button.style.width = '280px';
+				button.setAttribute('onclick','performSeletiveEvents('+randomEventsNum+','+i+')');//设置按钮触发后的效果
+				buttonContainer.appendChild(button);
+				buttonContainer.appendChild(document.createElement('br'));
+			}
+
+			popup.appendChild(buttonContainer);
+
+			document.body.appendChild(popup);
 		}
 	}
 }
+setInterval(function(){   //所以class=timer的元素时间-1s
+    var timers = document.querySelectorAll('.timer');
+    for (var i = 0; i < timers.length; i++)
+	{
+    	var timer = timers[i];
+		var time = timer.textContent.split(':');
+		var hours = parseInt(time[0], 10);
+		var minutes = parseInt(time[1], 10);
+		var seconds = parseInt(time[2], 10);
+		if (seconds > 0)
+		{
+			seconds--;
+		} 
+		else 
+		{
+			if (minutes > 0)
+			{
+				minutes--;
+				seconds = 59;
+			}
+			else
+			{
+				if (hours > 0)
+				{
+					hours--;
+					minutes = 59;
+					seconds = 59;
+				}
+				else
+				{
+					timer.parentNode.removeChild(timer);
+					continue;
+				}
+			}
+		}
+		timer.textContent = hours + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds);
+    }
+  }, 1000);
 //setInterval(eventsDisplay,eventSpeed);

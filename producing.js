@@ -122,30 +122,6 @@ function WorkersAdd(AddorSub,name)
 	elementPro['jobless'].innerText=production['jobless'];
 	worker[name]=Math.max(worker[name],0);//似乎没用
 	elementWorkNum[name].innerText=worker[name];
-	/*if(production['jobless']==0)//从这里
-	{
-		/*for(var key in worker)
-		{
-			elementBtnAdd[key].disabled=true;
-		}
-		//add.style.background= "grey";
-		const addBefore = document.querySelector('.add::before');
-		const addAfter = document.querySelector('.add::after');
-		addBefore.style.background = 'grey';
-		addAfter.style.background = 'grey';
-	}
-	if(production['jobless']>0)
-	{
-		for(var key in worker)
-		{
-			elementBtnAdd[key].disabled=false;
-		}
-	}
-	if(worker[name]==0)
-			elementBtnSub[name].disabled=true;
-	if(worker[name]>0)
-			elementBtnSub[name].disabled=false;//到这里是判断按钮是否需要无效/解除无效
-	*/
 }
 function popSub(reduction)
 {

@@ -95,15 +95,15 @@
 </head>
 <body onload="initialization()">
 	<div id="right" style="position:fixed; right:200px;"><!--将html分区，这是右侧栏-->
-		<div id="production" style="border:2px solid black; width:150px; padding:10px 10px; position:fixed;">
+		<div id="production" style="border:2px solid black; width:150px; padding:10px 10px;margin-bottom:1em;">
 			<div>population：<span id="popNum">0</span>/<span id="maxPop"></span></div>
 			<div>jobless：<span id="jobless"></span></div>
 			<div>product1：<span id="product1s"></span></div>
 			<div>product2：<span id="product2s"></span></div>
 			<div>product3：<span id="product3s"></span></div>
+			<br>
 		</div>
-		<br>
-		<div id="buffs" style="border:2px solid black; width:150px; padding:10px 10px; position:fixed;margin-top:200px;">
+		<div id="buffs" style="border:2px solid black; width:150px; padding:10px 10px;">
 			<div id="buffLast"></div>
 		</div>
 	</div>
@@ -124,7 +124,7 @@
 	<br>
 	<button onclick="eventsDisplay()">event</button>
 	<br>
-	<button onclick="addEventsBuff(1)">buffTest</button>
+	<button onclick="addEventsBuff(2)">buffTest</button>
 <script src="./variates.js"></script>
 <script src="./producing.js"></script>
 <script src="./events.js"></script>

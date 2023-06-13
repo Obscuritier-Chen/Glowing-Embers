@@ -52,6 +52,7 @@ var buildingsTable={
 };
 //---------------------------------------
 //events
+var inevitableEvents=[];//必然事件的堆栈
 var randomEventsPr={event1:10,	
                     event2:10,
                     event3:10};
@@ -73,8 +74,29 @@ var randomEventsAttribute={
         title:'event3',
         content:'test3',
         type:2
+    },
+	event4:
+    {
+        title:'event4',
+        content:'test4',
+        type:2
     }
 };
+var seletiveEventsSeletion={
+	event3:
+	{
+		num:2,
+		btn1:'btn1',
+		btn2:'btn2'
+	},
+	event4:
+	{
+		num:3,
+		btn1:'btn1',
+		btn2:'btn2',
+		btn3:'btn3'
+	}
+}
 var eventsBuff={//事件发生概率加权，0.01为单位
                 event1:0,
                 event2:0,
@@ -87,11 +109,13 @@ var eventsBuffsEffect={//改变事件发生概率的buff的效果
 	buff1:
 	{
 		eventNum:'event1',
-		effect:10
+		effect:10,
+		duration:-1//持续时间 -1是无限时间，以分钟为单位
 	},
 	buff2:
 	{
 		eventNum:'event2',
-		effect:20
+		effect:20,
+		duration:5
 	}
 }
