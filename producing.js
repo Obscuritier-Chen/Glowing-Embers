@@ -106,8 +106,7 @@ function WorkersAdd(AddorSub,name)
 	}
 	else if(AddorSub==5)
 	{
-		if(production['jobless']>=5)
-			worker[name]+=5,production['jobless']-=5;
+		worker[name]+=Math.min(production['jobless'],5),production['jobless']-=Math.min(production['jobless'],5);
 	}
 	else if(AddorSub==-1)
 	{
@@ -116,8 +115,7 @@ function WorkersAdd(AddorSub,name)
 	}
 	else if(AddorSub==-5)
 	{
-		if(worker[name]>=5)
-			worker[name]-=5,production['jobless']+=5;
+		production['jobless']+=Math.min(worker[name],5),worker[name]-=Math.min(worker[name],5);
 	}
 	elementPro['jobless'].innerText=production['jobless'];
 	worker[name]=Math.max(worker[name],0);//似乎没用

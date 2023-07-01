@@ -1,7 +1,8 @@
 //producing
 var popSpeed=1000,proSpeed=2000,eventSpeed=5000;
 var population=0,popLimit=20,lastWorker=3;
-var production={product1Num:0,product2Num:20,product3Num:20,jobless:0};
+var production={product1Num:10,product2Num:20,product3Num:20,jobless:0};
+var item={item1Num:0,item2Num:0};//物品
 var building={building1:false,building2:false};
 var elementBtnAdd={worker1:document.getElementById('btn1ProAdd'),
 				   worker2:'xzx',
@@ -80,7 +81,13 @@ var randomEventsAttribute={
         title:'event4',
         content:'test4',
         type:2
-    }
+    },
+	event5:
+	{
+		title:'event5',
+		content:'tradement',
+		type:3
+	}
 };
 var seletiveEventsSeletion={
 	event3:
@@ -95,6 +102,42 @@ var seletiveEventsSeletion={
 		btn1:'btn1',
 		btn2:'btn2',
 		btn3:'btn3'
+	}
+}
+var tradeEventsGoods={
+	event5:
+	{
+		num:3,
+		goods1Content:'goods1',
+		goods1Type:1,
+		goods1:'product1Num',
+		goods2Content:'goods2',
+		goods2Type:2,
+		goods2:'item1Num',
+		goods3Content:'goods3',
+		goods3Type:1,
+		goods3:'product3Num'
+	}
+}
+var goodsCost={//目前的交易只能消耗产品 未来可以给消耗品一个标记/使用if来判断消耗的是什么
+	event5:
+	{
+		goods1:
+		{
+			product2Num:2,
+			product3Num:2
+		},
+		goods2:
+		{
+			product1Num:1,
+			product2Num:1,
+			product3Num:1
+		},
+		goods3:
+		{
+			product1Num:10,
+			product2Num:10
+		}
 	}
 }
 var eventsBuff={//事件发生概率加权，0.01为单位
