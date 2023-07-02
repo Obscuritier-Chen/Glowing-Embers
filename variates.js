@@ -15,6 +15,7 @@ var elementPro={product1Num:document.getElementById('product1s'),//在字典里�
 				product3Num:document.getElementById('product3s'),
 			 	jobless:document.getElementById('jobless')};
 var worker={worker1:0,worker2:0,worker3:0};
+var workerEfficient={worker1:100,worker2:100,worker3:100};//产出加权
 var elementWorkNum={worker1:document.getElementById('worker1'),
 				    worker2:'xzx',
 				    worker3:'xzx'};//有xzx的都是之后创建的元素，需要创建时赋值
@@ -144,9 +145,13 @@ var eventsBuff={//事件发生概率加权，0.01为单位
                 event1:0,
                 event2:0,
                 event3:0};
-var buffsContent={
-				 buff1:'buff1',
-				 buff2:'buff2'
+var eventsBuffsContent={
+				 buff1:'eventsbuff1',
+				 buff2:'eventsbuff2'
+}
+var produceBuffsContent={
+	buff1:'producebuff1',
+	buff2:'producebuff2'
 }
 var eventsBuffsEffect={//改变事件发生概率的buff的效果
 	buff1:
@@ -159,6 +164,20 @@ var eventsBuffsEffect={//改变事件发生概率的buff的效果
 	{
 		eventNum:'event2',
 		effect:20,
+		duration:5
+	}
+}
+var produceBuffsEffect={
+	buff1:
+	{
+		workerNum:'worker1',
+		effect:100,
+		duration:-1//持续时间 -1是无限时间，以分钟为单位
+	},
+	buff2:
+	{
+		workerNum:'worker2',
+		effect:-100,
 		duration:5
 	}
 }

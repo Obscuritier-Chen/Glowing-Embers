@@ -31,12 +31,12 @@ function productions()
 			}
 			if(enoughProJudge)
 				for(const keyp in workersTable[keyw])
-					production[keyp]+=workersTable[keyw][keyp];
+					production[keyp]+=workersTable[keyw][keyp]*workerEfficient[keyw]/100;
 		}
 	}//当初始worker!=0时可能会有bug?
 	for(var key in production)//同时遍历production
 	{
-		elementPro[key].innerText=production[key];
+		elementPro[key].innerText=parseInt(production[key]);
 	}
 	//product1Num=Math.max(product1Num+count,0);
 	return productions;
@@ -91,7 +91,7 @@ function bldHouse()
 	if(production['product2Num']>=5)
 	{
 		production['product2Num']-=5;//建房，扣资源，加人口限制
-		elementPro['product2Num'].innerText=production['product2Num'];
+		elementPro['product2Num'].innerText=parseInt(production['product2Num']);
 		popLimit+=5;
 		document.getElementById('maxPop').innerText=popLimit;
 	}
@@ -171,7 +171,7 @@ function build(name)
 				production[key]-=buildingsTable[name][key];
 		for(var key in production)//建造完成后刷新资源显示
 		{
-			elementPro[key].innerText=production[key];
+			elementPro[key].innerText=parseInt(production[key]);
 		}
 	}
 }

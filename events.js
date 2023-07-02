@@ -1,4 +1,4 @@
-﻿function randomEvents()//写生产buff
+﻿function randomEvents()
 {
 	var prSum=0,coefficient,randomEventsNum;//randomEventsNum是随机事件编号
 	var randomEventsLength=Object.keys(randomEventsPr).length;//获取字典的大小
@@ -31,12 +31,12 @@
 }
 function addEventsBuff(num)
 {
-	if(!document.getElementById('buff'+num))
+	if(!document.getElementById('eventsBuff'+num))
 	{
 		eventsBuff[eventsBuffsEffect['buff'+num]['eventNum']]+=eventsBuffsEffect['buff'+num]['effect'];
 		var buffDiv=document.createElement('div');//创建新buff 元素
-		buffDiv.setAttribute('id','buff'+num);
-		buffDiv.innerHTML=buffsContent['buff'+num];
+		buffDiv.setAttribute('id','eventsBuff'+num);
+		buffDiv.innerHTML=eventsBuffsContent['buff'+num];
 		if(eventsBuffsEffect['buff'+num]['duration']!=-1)
 		{
 			var h=Math.floor(eventsBuffsEffect['buff'+num]['duration']/60),m=eventsBuffsEffect['buff'+num]['duration']%60;
@@ -52,6 +52,27 @@ function addEventsBuff(num)
 		}
 	}
 }
+function addProduceBuff(num)
+{
+	if(!document.getElementById('produceBuff'+num))
+	{
+		workerEfficient[produceBuffsEffect['buff'+num]['workerNum']]+=produceBuffsEffect['buff'+num]['effect'];
+		var buffDiv=document.createElement('div');//创建新buff 元素
+		buffDiv.setAttribute('id','produceBuff'+num);
+		buffDiv.innerHTML=produceBuffsContent['buff'+num];
+		if(produceBuffsEffect['buff'+num]['duration']!=-1)
+		{
+			var h=Math.floor(produceBuffsEffect['buff'+num]['duration']/60),m=produceBuffsEffect['buff'+num]['duration']%60;
+			buffDiv.innerHTML+=' <span class="timer">'+h+':'+m+':0</span>';
+		}
+		document.getElementById("buffs").insertBefore(buffDiv,document.getElementById("buffLast"));/*insertbefore的. 前需要是buff
+		last的上一级，假如bufflast被嵌套了*/
+		if(produceBuffsEffect['buff'+num]['duration']!=-1)
+		{
+			setTimeout(function(num){document.getElementById('buff'+num).remove();},produceBuffsEffect['buff'+num]['duration']*1000*60,num);
+		}
+	}
+}
 function performConfirmEvents(randomEventsNum)
 {
 	switch (randomEventsNum)//根据时间编号产生事件效果
@@ -61,7 +82,7 @@ function performConfirmEvents(randomEventsNum)
 			break;
 		case 2:
 			production['product1Num']+=5;
-			elementPro['product1Num'].innerText=production['product1Num'];
+			elementPro['product1Num'].innerText=parseInt(production['product1Num']);
 			break;
 		default:
 			break;
@@ -131,7 +152,7 @@ function performTradeEvents(eventNum,btnNum,goodsNum)//大胆一点，买buff/�
 		}
 		for(var key in production)//刷新production显示
 		{
-			elementPro[key].innerText=production[key];
+			elementPro[key].innerText=parseInt(production[key]);
 		}
 	}
 }
