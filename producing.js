@@ -17,7 +17,7 @@ function initialization()//加载后运行
 	document.getElementById('popNum').innerText=population;//初始化人口
 	document.getElementById('maxPop').innerText=popLimit;
 }
-function productions()
+function produce()
 {
 	for(const keyw in workersTable)//遍历table的worker
 	{
@@ -39,7 +39,7 @@ function productions()
 		elementPro[key].innerText=parseInt(production[key]);
 	}
 	//product1Num=Math.max(product1Num+count,0);
-	return productions;
+	return produce;
 }
 function popIncrement(differ)//计算人口增加量
 {//这玩意参数还是要调一调sigma变为3 differ=1时 x=-3.5 differ=8时 x=3.5 differ=15时x=10.5
@@ -96,6 +96,27 @@ function bldHouse()
 		document.getElementById('maxPop').innerText=popLimit;
 	}
 }
+function productionVariation()//工人或buff  序号  工人数量
+{
+	for(var key in produceResult)
+	{
+		produceResult[key]=0;//预处理，清零
+	}
+	for(var keyw in workersTable)//计算生产量
+	{
+		for(var keyp in workersTable[keyw])
+		{
+			if(workersTable[keyw][keyp]>0)
+				produceResult[keyp]+=worker[keyw]*workersTable[keyw][keyp]*workerEfficient[keyw]/100;
+			else if(workersTable[keyw][keyp]<0)
+			produceResult[keyp]+=worker[keyw]*workersTable[keyw][keyp];
+		}
+	}
+	for(var key in produceResult)
+	{
+		document.getElementById(key).nextElementSibling.innerText='('+parseInt(produceResult[key])+')';//更新HTML
+	}
+}
 function WorkersAdd(AddorSub,name)
 {
 	//工人+1 +5 -1 -5的情况
@@ -117,6 +138,7 @@ function WorkersAdd(AddorSub,name)
 	{
 		production['jobless']+=Math.min(worker[name],5),worker[name]-=Math.min(worker[name],5);
 	}
+	productionVariation();//更新生产量显示
 	elementPro['jobless'].innerText=production['jobless'];
 	worker[name]=Math.max(worker[name],0);//似乎没用
 	elementWorkNum[name].innerText=worker[name];
@@ -175,5 +197,5 @@ function build(name)
 		}
 	}
 }
-setInterval(productions(),proSpeed);//定期执行production
+setInterval(produce(),proSpeed);//定期执行production
 setInterval(popUpdate,popSpeed);

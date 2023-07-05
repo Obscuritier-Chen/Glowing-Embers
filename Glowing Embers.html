@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>余烬之光</title>
+<title>余烬之辉</title>
     <style>
         .btnSubClass, .btnAddClass
 		{/*干掉按钮边框，按钮底色*/
@@ -91,19 +91,40 @@
 		{
     		transform: rotate(-90deg);
 		}/*垃圾CSS,但能用就行*/
+		.objectNum
+		{
+			float: right;
+		}
+		.objectVariation
+		{
+			color: darkgray;
+			font-size: 80%;
+		}
+		.rectangle
+		{
+      		position: absolute;
+			margin-top: 20px;
+			left:28px;
+			/*top: 100%;*/
+			background-color: black;
+			color: white; /* 字体颜色为白色 */
+			display: flex;
+			display: inline-block;
+			padding: 5px;
+			z-index: 999;/*覆盖优先级*/
+    	}
     </style>
 </head>
 <body onload="initialization()">
 	<div id="right" style="position:fixed; right:200px;"><!--将html分区，这是右侧栏-->
-		<div id="production" style="border:2px solid black; width:150px; padding:10px 10px;margin-bottom:1em;">
-			<div>population：<span id="popNum">0</span>/<span id="maxPop"></span></div>
-			<div>jobless：<span id="jobless"></span></div>
-			<div>product1：<span id="product1s"></span></div>
-			<div>product2：<span id="product2s"></span></div>
-			<div>product3：<span id="product3s"></span></div>
-			<br>
+		<div id="production" style="border:2px solid black; width:220px; padding:10px 10px;margin-bottom:1em;">
+			<div>population：<div class="objectNum" style="position:relative;"><span id="popNum" >0</span>/<span id="maxPop" style="float:right"></span></div></div>
+			<div>jobless：<div class="objectNum"><span id="jobless" ></span></div></div>
+			<div id="product1" onmouseover="productMsOn(1)" onmouseout="productMsOff(1)">product1：<div class="objectNum"><span id="product1Num"></span><span class="objectVariation">(0)</span></div></div>
+			<div id="product2" onmouseover="productMsOn(2)" onmouseout="productMsOff(2)">product2：<div class="objectNum"><span id="product2Num"></span><span class="objectVariation">(0)</span></div></div>
+			<div id="product3" onmouseover="productMsOn(3)" onmouseout="productMsOff(3)">product3：<div class="objectNum"><span id="product3Num"></span><span class="objectVariation">(0)</span></div></div>
 		</div>
-		<div id="buffs" style="border:2px solid black; width:150px; padding:10px 10px;">
+		<div id="buffs" style="border:2px solid black; width:220px; padding:10px 10px;">
 			<div id="buffLast"></div>
 		</div>
 	</div>
@@ -126,6 +147,7 @@
 	<br>
 	<button onclick="addEventsBuff(2)">buffTest</button>
 <script src="./variates.js"></script>
+<script src="./HTMLchange.js"></script>
 <script src="./producing.js"></script>
 <script src="./events.js"></script>
 </body>

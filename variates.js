@@ -10,12 +10,13 @@ var elementBtnAdd={worker1:document.getElementById('btn1ProAdd'),
 var elementBtnSub={worker1:document.getElementById('btn1ProSub'),
 				   worker2:'xzx',
 				   worker3:'xzx'};
-var elementPro={product1Num:document.getElementById('product1s'),//在字典里就获取element,但此时body未加载
-				product2Num:document.getElementById('product2s'),
-				product3Num:document.getElementById('product3s'),
+var elementPro={product1Num:document.getElementById('product1Num'),//在字典里就获取element,但此时body未加载
+				product2Num:document.getElementById('product2Num'),
+				product3Num:document.getElementById('product3Num'),
 			 	jobless:document.getElementById('jobless')};
 var worker={worker1:0,worker2:0,worker3:0};
 var workerEfficient={worker1:100,worker2:100,worker3:100};//产出加权
+var produceResult={product1Num:0,product2Num:0,product3Num:0}
 var elementWorkNum={worker1:document.getElementById('worker1'),
 				    worker2:'xzx',
 				    worker3:'xzx'};//有xzx的都是之后创建的元素，需要创建时赋值
@@ -164,19 +165,19 @@ var eventsBuffsEffect={//改变事件发生概率的buff的效果
 	{
 		eventNum:'event2',
 		effect:20,
-		duration:5
+		duration:1
 	}
 }
 var produceBuffsEffect={
 	buff1:
 	{
 		workerNum:'worker1',
-		effect:100,
+		effect:150,
 		duration:-1//持续时间 -1是无限时间，以分钟为单位
 	},
 	buff2:
 	{
-		workerNum:'worker2',
+		workerNum:'worker1',
 		effect:-100,
 		duration:5
 	}

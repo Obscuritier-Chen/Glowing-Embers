@@ -46,7 +46,9 @@ function addEventsBuff(num)
 		last的上一级，假如bufflast被嵌套了*/
 		if(eventsBuffsEffect['buff'+num]['duration']!=-1)
 		{
-			setTimeout(function(num){document.getElementById('buff'+num).remove();},eventsBuffsEffect['buff'+num]['duration']*1000*60,num);
+			setTimeout(function(num){document.getElementById('eventsBuff'+num).remove();
+									 eventsBuff[eventsBuffsEffect['buff'+num]['eventNum']]-=eventsBuffsEffect['buff'+num]['effect'];}
+			,eventsBuffsEffect['buff'+num]['duration']*1000*60,num);
 			//写这个破 时间结束就删除的玩意花了我一个晚上 
 			//function里不能直接传参数会被立即执行 可以在setTimeout最后写上参数
 		}
@@ -69,8 +71,11 @@ function addProduceBuff(num)
 		last的上一级，假如bufflast被嵌套了*/
 		if(produceBuffsEffect['buff'+num]['duration']!=-1)
 		{
-			setTimeout(function(num){document.getElementById('buff'+num).remove();},produceBuffsEffect['buff'+num]['duration']*1000*60,num);
+			setTimeout(function(num){document.getElementById('produceBuff'+num).remove();
+									workerEfficient[produceBuffsEffect['buff'+num]['workerNum']]-=produceBuffsEffect['buff'+num]['effect'];}
+			,produceBuffsEffect['buff'+num]['duration']*1000*60,num);
 		}
+		productionVariation('buff',null,null);//因为workerEfficient已经更新，仅更新HTML
 	}
 }
 function performConfirmEvents(randomEventsNum)
