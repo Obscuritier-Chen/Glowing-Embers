@@ -113,6 +113,19 @@
 			padding: 5px;
 			z-index: 999;/*覆盖优先级*/
     	}
+		.normalButton
+		{
+			position: relative;
+			color:black;
+			min-width: 120px;
+			height: 35px;
+			border: 1px solid black;
+			background: none;
+			text-align: left;
+			font-size: 1.07em;
+			display: inline-block;/*保证当按钮内元素增多时 宽度变大*/
+  			white-space: nowrap;
+		}
     </style>
 </head>
 <body onload="initialization()">
@@ -128,18 +141,25 @@
 			<div id="buffLast"></div>
 		</div>
 	</div>
+	<div id="builders">
+		builderNum：
+		<button class="btnSubClass" onclick="WorkersAdd(-5,'builder')"><span class="sub"></span></button><button class="btnSubClass" onclick="WorkersAdd(-1,'builder')"><span class="sub"></span></button>
+		<span id="builder">0</span>
+		<button class="btnAddClass" onclick="WorkersAdd(1,'builder')"><span class="add"></span></button><button class="btnAddClass" onclick="WorkersAdd(5,'builder')"><span class="add"></span></button>
+	</div>
 	<div id="worker1s">
 		worker1Num：
 		<button class="btnSubClass" onclick="WorkersAdd(-5,'worker1')"><span class="sub"></span></button><button class="btnSubClass" onclick="WorkersAdd(-1,'worker1')"><span class="sub"></span></button>
 		<span id="worker1">0</span>
 		<button class="btnAddClass" onclick="WorkersAdd(1,'worker1')"><span class="add"></span></button><button class="btnAddClass" onclick="WorkersAdd(5,'worker1')"><span class="add"></span></button>
 	</div>
+	
 	<div id="workerLast"></div>
 	<button id="btn1Bld" onclick="build('building1')">build1</button>
 	<br>
 	<button id="btn2Bld" onclick="build('building2')">build2</button>
 	<br>
-	<button onclick="bldHouse()">buildhouse</button>
+	<button class="normalButton" id="bldHouse" onclick="bldHouse()">buildhouse</button>
 	<br>
 	<button onclick="popSub(11)">Subpop</button>
 	<br>
@@ -150,5 +170,6 @@
 <script src="./HTMLchange.js"></script>
 <script src="./producing.js"></script>
 <script src="./events.js"></script>
+<script src="./monitor.js"></script>
 </body>
 </html>
