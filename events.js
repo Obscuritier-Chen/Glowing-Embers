@@ -1,4 +1,8 @@
-﻿function randomEvents()
+﻿function test()
+{
+	document.getElementById('all').setAttribute('class','');
+}
+function randomEvents()
 {
 	var prSum=0,coefficient,randomEventsNum;//randomEventsNum是随机事件编号
 	var randomEventsLength=Object.keys(randomEventsPr).length;//获取字典的大小
@@ -92,6 +96,7 @@ function performConfirmEvents(randomEventsNum)
 		default:
 			break;
 	}
+	proVariationMonitor();
 }
 function performSeletiveEvents(eventNum,btnNum)
 {
@@ -130,6 +135,7 @@ function performSeletiveEvents(eventNum,btnNum)
 			break;
 	}
 	document.getElementById('eventsPopup').remove();//移除popup
+	proVariationMonitor();
 }
 function performTradeEvents(eventNum,btnNum,goodsNum)//大胆一点，买buff/事件
 {
@@ -157,21 +163,28 @@ function performTradeEvents(eventNum,btnNum,goodsNum)//大胆一点，买buff/�
 		}
 		for(var key in production)//刷新production显示
 		{
+			if(elementPro[key]=='xzx') continue;
 			elementPro[key].innerText=parseInt(production[key]);
 		}
 	}
+	proVariationMonitor();
 }
 function eventsDisplay()
 {
 	if(document.getElementById('eventsPopup') == null)
 	{
-		var randomEventsNum=randomEvents();//产生时间编号
-		//randomEventsNum=5;
-		if(inevitableEvents.length!=0)
+		var randomEventsNum=0;//产生时间编号
+		if(inevitableEvents.length!=0)//必然事件
 		{
-			randomEventsNum=inevitableEvents.pop();//必然事件较随机事件概率更高
+			if(inevitableEventsDelay==0)
+				inevitableEventsDelay=parseInt(Math.random()*10%maxDelay),randomEventsNum=inevitableEvents.shift();
+			else if(inevitableEventsDelay>0)
+				inevitableEventsDelay--,randomEventsNum=randomEvents();
 		}
-		//randomEventsNum=5;
+		else if(inevitableEvents.length==0)//随机事件
+		{
+			randomEventsNum=randomEvents();
+		}
 		if(randomEventsAttribute['event'+randomEventsNum]['type']==1)
 		{
 			performConfirmEvents(randomEventsNum);//confirm事件 的效果
@@ -276,7 +289,7 @@ function eventsDisplay()
 				button.style.background = 'none';
 				button.style.border = '1px solid black';
 				button.style.width = '280px';
-				button.setAttribute('onclick','performTradeEvents('+randomEventsNum+','+i+')');//设置按钮触发后的效果
+				button.setAttribute('onclick','performSeletiveEvents('+randomEventsNum+','+i+')');//设置按钮触发后的效果
 				buttonContainer.appendChild(button);
 				buttonContainer.appendChild(document.createElement('br'));
 			}
@@ -428,5 +441,3 @@ function infoPopup(num)
 
 	document.body.appendChild(popup);
 }
-
-//setInterval(eventsDisplay,eventSpeed);
