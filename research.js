@@ -39,3 +39,46 @@ function research(name)
 		document.getElementById(name).appendChild(rsrTimer);
     }
 }
+function panelDelete(name)
+{
+    alert('test');
+    document.getElementById(name).remove();
+}
+function createAllotPanel(type)
+{
+    var rectangle=document.createElement('div');
+    rectangle.setAttribute('id',type+'AllotPanel');
+    rectangle.style.position='absolute';
+    rectangle.style.left=document.getElementById(type+'Allot').getBoundingClientRect().left+33+'px';
+    rectangle.style.top=document.getElementById(type+'Allot').getBoundingClientRect().top+'px';
+    rectangle.style.backgroundColor='white';
+    rectangle.style.border='1px solid black';
+    rectangle.style.fontSize='16px';
+    rectangle.style.marginLeft='15px';
+    rectangle.style.padding='5px';
+    rectangle.style.zIndex=999;
+    
+
+    var researcherLv1=document.createElement('div');
+    researcherLv1.innerText='researcherLv1';
+    rectangle.appendChild(researcherLv1);
+    var researcherLv2=document.createElement('div');
+    researcherLv2.innerText='researcherLv2';
+    rectangle.appendChild(researcherLv2);
+    var researcherLv3=document.createElement('div');
+    researcherLv3.innerText='researcherLv3';
+    rectangle.appendChild(researcherLv3);
+
+    var confirmButton = document.createElement('button');
+    confirmButton.style.padding='2px';
+	confirmButton.style.background = 'none'; // 删除按钮背景
+    confirmButton.style.border='1px solid black';
+    confirmButton.style.float='right';
+	confirmButton.innerText = "confirm";
+    confirmButton.addEventListener('click', function() {
+        rectangle.remove();
+    });
+    
+    rectangle.appendChild(confirmButton);
+    document.body.appendChild(rectangle);
+}
