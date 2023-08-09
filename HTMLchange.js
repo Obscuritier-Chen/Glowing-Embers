@@ -12,7 +12,7 @@ function infoPopup(num)
 		popup.style.top = '50%';
 		popup.style.left = '50%';
 		popup.style.transform = 'translate(-50%, -50%)';
-		popup.style.zIndex= 100;
+		popup.style.zIndex= 999;
 		popup.style.backgroundColor= 'white';
 
 		var title = document.createElement('div');
@@ -51,6 +51,7 @@ function productMsOn(name)
         var rectangle = document.createElement('div');
         rectangle.className = 'rectangle';
         rectangle.setAttribute('id',name+'Detail');
+
         if(popNeed[name+'Num']!=0&&population!=0)//人口需求
         {
             var need=document.createElement('div');
@@ -60,7 +61,7 @@ function productMsOn(name)
                 need.innerText=population+'*'+'population'+':     '+(population*popNeed[name+'Num']);
             rectangle.appendChild(need);
         }
-		for(var key in buildingAttribute)
+		for(var key in buildingAttribute)//建筑消耗
 		{
 			if(buildingAttribute[key]['consume']!=null&&buildingAttribute[key]['num']>0)
 			{
@@ -185,6 +186,44 @@ function buildingMsOff(name)
 	if(document.getElementById(name+'Detail')!=null)
 		document.getElementById(name+'Detail').remove();
 }
+function researchMsOn(name)
+{
+	if(document.getElementById(name+'Detail')==null)
+	{
+		var rectangle=document.createElement('div');
+		rectangle.className='rectangle';
+		rectangle.setAttribute('id',name+'Detail');
+		rectangle.style.whiteSpace='nowrap';
+
+		var text=document.createElement('div');
+		text.innerText=researchProject[name]['text'];
+		rectangle.appendChild(text);
+
+		var consume=document.createElement('div');
+		consume.innerText='consume:';
+		if(researchProject[name]['consume']==null)
+			consume.innerText='consume:  null';
+		for(var key in researchProject[name]['consume'])
+		{
+			var product=document.createElement('div');
+			product.style.marginLeft='15px';
+			product.innerText=key+':  '+researchProject[name]['consume'][key];
+			consume.appendChild(product);
+		}
+		rectangle.appendChild(consume)
+
+		var time=document.createElement('div');
+		time.innerText='take time:  '+researchProject[name]['time'];
+		rectangle.appendChild(time);
+
+		document.getElementById(name).appendChild(rectangle);
+	}
+}
+function researchMsOff(name)
+{
+	if(document.getElementById(name+'Detail')!=null)
+		document.getElementById(name+'Detail').remove();
+}
 setInterval(function(){   //所有class=timer的元素时间-1s
     var timers = document.querySelectorAll('.timer');
     for (var i = 0; i < timers.length; i++)
@@ -270,7 +309,7 @@ setInterval(function(){   //所有class=timer的元素时间-1s
 		timer.textContent = hours + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds);
     }
   }, 1000);
-setInterval(function(){   //所有class=timer的元素时间-1s
+setInterval(function(){
     var timers = document.querySelectorAll('.rsrTimer');
     for (var i = 0; i < timers.length; i++)
 	{
@@ -279,32 +318,16 @@ setInterval(function(){   //所有class=timer的元素时间-1s
 		var hours = parseInt(time[0], 10);
 		var minutes = parseInt(time[1], 10);
 		var seconds = parseInt(time[2], 10);
-		if (seconds > 0)
+		var totalTime=hours*60*60+minutes*60+seconds;
+		totalTime=totalTime-(window[timer.parentElement.parentElement.id+'Attribute']['researcherLv1']*researchSpeed['researcherLv1']+
+							 window[timer.parentElement.parentElement.id+'Attribute']['researcherLv2']*researchSpeed['researcherLv2']+
+							 window[timer.parentElement.parentElement.id+'Attribute']['researcherLv3']*researchSpeed['researcherLv3']);
+		hours=parseInt(totalTime/60/60),minutes=parseInt(totalTime/60%60),seconds=totalTime%60;
+		if(totalTime<=0)
 		{
-			seconds--;
-		} 
-		else 
-		{
-			if (minutes > 0)
-			{
-				minutes--;
-				seconds = 59;
-			}
-			else
-			{
-				if (hours > 0)
-				{
-					hours--;
-					minutes = 59;
-					seconds = 59;
-				}
-				else
-				{
-					timer.parentNode.removeChild(timer);
-					researchResult(timer.getAttribute('id').replace(/Timer/g, ''));
-					continue;
-				}
-			}
+			hours=0,minutes=0,seconds=0;
+			timer.parentNode.removeChild(timer);
+			researchResult(timer.getAttribute('id').replace(/Timer/g, ''));
 		}
 		timer.textContent = hours + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds);
     }

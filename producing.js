@@ -287,6 +287,27 @@ function WorkersAdd(AddorSub,name)
 	worker[name]=Math.max(worker[name],0);//似乎没用
 	elementWorkNum[name].innerText=worker[name];
 }
+function researcherSub(name,num)//处理各岗位researcher的sub
+{
+	var temp=Math.min(freeResearcher[name],num);
+	freeResearcher[name]-=temp;
+	num-=temp;
+	var temp=Math.min(scienceAttribute[name],num);
+	scienceAttribute[name]-=temp;
+	num-=temp;
+	if(document.getElementById('science'+name.replace(/researcher/gi, "Researcher")+'Num')!=null)//若分配面板未关 更新其HTML
+		document.getElementById('science'+name.replace(/researcher/gi, "Researcher")+'Num').innerText=scienceAttribute[name];
+	var temp=Math.min(engineeringAttribute[name],num);
+	engineeringAttribute[name]-=temp;
+	num-=temp;
+	if(document.getElementById('engineering'+name.replace(/researcher/gi, "Researcher")+'Num')!=null)
+		document.getElementById('engineering'+name.replace(/researcher/gi, "Researcher")+'Num').innerText=engineeringAttribute[name];
+	var temp=Math.min(sociologyAttribute[name],num);
+	sociologyAttribute[name]-=temp;
+	if(document.getElementById('sociology'+name.replace(/researcher/gi, "Researcher")+'Num')!=null)
+		document.getElementById('sociology'+name.replace(/researcher/gi, "Researcher")+'Num').innerText=sociologyAttribute[name];
+	num-=temp;
+}
 function popSub(reduction)
 {
 	reduction=Math.min(population,reduction);
@@ -296,12 +317,21 @@ function popSub(reduction)
 	production['jobless']-=Math.min(production['jobless'],reduction);//优先减无业者
 	reduction-=temp;//计算新的减少量
 	elementPro['jobless'].innerText=production['jobless'];
-	for(var key in worker)
+	for(var key in worker)//减少工人
 	{
 		var temp=Math.min(worker[key],reduction);
 		worker[key]-=Math.min(worker[key],reduction);//减少该工人
 		reduction-=temp;
 		elementWorkNum[key].innerText=worker[key];
+	}
+	for(var key in specialResident)//特殊人口优先级最低
+	{
+		var temp=Math.min(specialResident[key],reduction);
+		specialResident[key]-=Math.min(specialResident[key],reduction);
+		if(key=='researcherLv1'||key=='researcherLv2'||key=='researcherLv3')
+			researcherSub(key,temp);
+		reduction-=temp;
+		document.getElementById(key+'Num').innerText=specialResident[key];
 	}
 	productionVariation();
 }

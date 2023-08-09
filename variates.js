@@ -1,11 +1,10 @@
 //producing
 var popSpeed=1000,proSpeed=2000,eventSpeed=5000;
 var popUpdating;
-var population=1,popLimit=20;
+var population=3,popLimit=20;
 var production={product1Num:10,product2Num:20,product3Num:20,product4Num:0,jobless:0};
-var demographicComp={//人口组成
-	jobless:0,
-	researcherLv1:0,
+var specialResident={//特殊人口
+	researcherLv1:2,
 	researcherLv2:0,
 	researcherLv3:1
 }
@@ -317,65 +316,76 @@ var researchProject={
 	{
 		type:'science',
 		time:10,
+		pre:null,//前置
 		display:1,
+		condition:0,//是否完成
 		text:'research1',
-		consume:null
+		consume:null,
+		unlock:['research2','research3']//可解锁
 	},
 	research2:
 	{
 		type:'engineering',
 		time:10,
-		display:1,
+		pre:['research1'],
+		display:0,
+		condition:0,
 		text:'research2',
 		consume:
 		{
 			product2Num:5
-		}
+		},
+		unlock:['research4']
 	},
 	research3:
 	{
 		type:'sociology',
 		time:10,
-		display:1,
-		text:'research2',
-		consume:
-		{
-			product2Num:5
-		}
+		pre:['research1'],
+		display:0,
+		condition:0,
+		text:'research3',
+		consume:null,
+		unlock:['research4']
 	},
 	research4:
 	{
 		type:'engineering',
-		time:20,
-		display:1,
-		text:'research2',
-		consume:null
+		time:1000,
+		pre:['research2','research3'],
+		display:0,
+		condition:0,
+		text:'research4',
+		consume:null,
+		unlock:null
 	}
+}
+var researchSpeed={
+	researcherLv1:1,
+	researcherLv2:3,
+	researcherLv3:5
 }
 var scienceAttribute={
 	condition:0,
-	researcher:
-	{
-		level1:0,
-		level2:0,
-		level3:0,
-	}
+	researcherLv1:0,
+	researcherLv2:0,
+	researcherLv3:0
 }
 var engineeringAttribute={
 	condition:0,
-	researcher:
-	{
-		level1:0,
-		level2:0,
-		level3:0,
-	}
+	researcherLv1:0,
+	researcherLv2:0,
+	researcherLv3:0
 }
 var sociologyAttribute={
 	condition:0,
-	researcher:
-	{
-		level1:0,
-		level2:0,
-		level3:0,
-	}
+	researcherLv1:0,
+	researcherLv2:0,
+	researcherLv3:0
 }
+var freeResearcher={
+	researcherLv1:2,
+	researcherLv2:0,
+	researcherLv3:1
+}
+var researchDisplayQueue=[];
