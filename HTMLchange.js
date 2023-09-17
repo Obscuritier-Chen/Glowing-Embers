@@ -1,12 +1,14 @@
-function infoPopup(num)
+function infoPopup(name)
 {
-	if(document.getElementById('info'+num)==null)
+	if(infoPopupAttribute[name]['type']=='course'&&gameType!='course')//若非教程要弹出教程内容
+		return;
+	if(document.getElementById(name)==null)
 	{
 		var popup = document.createElement('div');
-		popup.setAttribute('id','info'+num);
-		popup.style.width = '120px';
+		popup.setAttribute('id',name);
+		popup.style.width = '250px';
 		popup.style.border = '2px solid black';
-		popup.style.padding = '10px';
+		popup.style.padding = '20px';
 		popup.style.overflowWrap = 'break-word';
 		popup.style.position = 'fixed';
 		popup.style.top = '50%';
@@ -17,7 +19,7 @@ function infoPopup(num)
 
 		var title = document.createElement('div');
 		title.style.textAlign = 'center';
-		title.textContent = infoPopupAttribute['info'+num]['title'];
+		title.textContent = infoPopupAttribute[name]['title'];
 		title.style.fontSize='20px';
 		popup.appendChild(title);
 
@@ -25,10 +27,11 @@ function infoPopup(num)
 		content.style.marginTop = '10px';
 		content.style.marginBottom='40px';
 		content.style.fontSize = '15px';
-		content.textContent = infoPopupAttribute['info'+num]['content'];
+		content.textContent = infoPopupAttribute[name]['content'];
 		popup.appendChild(content);
 
 		var confirmButton = document.createElement('button');
+		confirmButton.setAttribute('id',name+'Button');
 		confirmButton.style.position = 'absolute';
 		confirmButton.style.background = 'none'; // 删除按钮背景
 		confirmButton.style.right = '10px';
@@ -86,17 +89,19 @@ function productMsOn(name)
                 else if(worker[key]!=actualWrkNum[key])
                     produce.innerText=actualWrkNum[key]+'('+worker[key]+')*'+key+':     '+actualWrkNum[key]*workersTable[key][name+'Num'];
                 rectangle.appendChild(produce);
-                for(var keyb in produceBuffsEffect)
+                for(var keyb in buffAttribute)
                 {
+					if(buffAttribute[keyb]['type']!='produce')
+						continue;
                     //alert(produceBuffsEffect[keyb]['workerNum']+key);
-                    if(produceBuffsEffect[keyb]['workerNum']==key&&document.getElementById('produceBuff'+keyb.replace('buff',''))!=null&&workersTable[key][name+'Num']>0)
+                    if(buffAttribute[keyb]['workerName']==key&&document.getElementById('produceBuff'+keyb.replace(/^\w/, c => c.toUpperCase()))!=null&&workersTable[key][name+'Num']>0)
                     {
                         var buff=document.createElement('div');
                         buff.style.marginLeft='15px';
-                        if(produceBuffsEffect[keyb]['effect']<0)
-                            buff.innerText='    '+produceBuffsContent[keyb]+':     '+produceBuffsEffect[keyb]['effect']+'%';
-                        else if(produceBuffsEffect[keyb]['effect']>0)
-                            buff.innerText='    '+produceBuffsContent[keyb]+':     +'+produceBuffsEffect[keyb]['effect']+'%';
+                        if(buffAttribute[keyb]['effect']<0)
+                            buff.innerText='    '+keyb+':     '+buffAttribute[keyb]['effect']+'%';
+                        else if(buffAttribute[keyb]['effect']>0)
+                            buff.innerText='    '+keyb+':     +'+buffAttribute[keyb]['effect']+'%';
                         rectangle.appendChild(buff);
                     }
                 }
@@ -148,14 +153,36 @@ function buildMsOn(name)
 			document.getElementById('bldHouse').appendChild(rectangle);
 		else
 			document.getElementById(name.replace(/ing/g, "")).appendChild(rectangle);
+		var consume=document.createElement('div');
+		consume.style.whiteSpace='nowrap';
+		consume.innerText='consume:';
+		rectangle.appendChild(consume);
 		for(var key in buildingAttribute[name]['need'])
 		{
-			var need=document.createElement('div');
-			need.style.whiteSpace='nowrap';//禁止换行 虽然不到为啥它会换行
-			need.innerText=key+':  '+buildingAttribute[name]['need'][key];
-			rectangle.appendChild(need);
+			if(buildingAttribute[name]['need'][key]>0)
+			{
+				var need=document.createElement('div');
+				need.style.whiteSpace='nowrap';//禁止换行 虽然不到为啥它会换行
+				need.style.marginLeft='15px';
+				if(proDisplay[key]==0)
+					need.style.color='red';
+				if(production[key]>=buildingAttribute[name]['need'][key])
+					need.innerText=key+':  '+buildingAttribute[name]['need'][key];
+				else if(production[key]<buildingAttribute[name]['need'][key])
+				{
+					need.innerText=key+':  ';
+					var needNum=document.createElement('span');
+					needNum.style.color='red';
+					needNum.innerText=buildingAttribute[name]['need'][key];
+					need.appendChild(needNum);
+				}
+				consume.appendChild(need);
+			}
 		}
+
 		var builder=document.createElement('div');
+		if(buildingAttribute[name]['builderNeed']>worker['builder']-workingBuilder)	
+			builder.style.color='red';
 		builder.innerText='builderNeed:  '+buildingAttribute[name]['builderNeed'];
 		rectangle.appendChild(builder);
 		var time=document.createElement('div');
@@ -220,6 +247,49 @@ function researchMsOn(name)
 	}
 }
 function researchMsOff(name)
+{
+	if(document.getElementById(name+'Detail')!=null)
+		document.getElementById(name+'Detail').remove();
+}
+function buffMsOn(name)
+{
+	if(document.getElementById(name+'Detail')==null)
+	{
+		var rectangle=document.createElement('div');
+		rectangle.className='rectangle';
+		rectangle.setAttribute('id',name+'Detail');
+		rectangle.style.whiteSpace='nowrap';
+
+		var type=document.createElement('div');
+		type.innerText='type:  '+buffAttribute[name]['type'];
+		rectangle.appendChild(type);
+
+		var effect=document.createElement('div');
+		effect.innerText='effect:';
+		if(buffAttribute[name]['type']=='event')
+		{
+			var eventEffect=document.createElement('div');
+			eventEffect.style.marginLeft='15px';
+			eventEffect.innerText=buffAttribute[name]['eventName']+':  '+((buffAttribute[name]['effect']>0) ? '+'+buffAttribute[name]['effect'] : buffAttribute[name]['effect'])+'%';
+			effect.appendChild(eventEffect);
+		}
+		else if(buffAttribute[name]['type']=='produce')
+		{
+			var produceEffect=document.createElement('div');
+			produceEffect.style.marginLeft='15px';
+			produceEffect.innerText=buffAttribute[name]['workerName']+':  '+((buffAttribute[name]['effect']>0) ? '+'+buffAttribute[name]['effect'] : buffAttribute[name]['effect'])+'%';
+			effect.appendChild(produceEffect);
+		}
+		rectangle.appendChild(effect);
+
+		var content=document.createElement('div');
+		content.innerText='content:  '+buffAttribute[name]['content'];
+		rectangle.appendChild(content);
+
+		document.getElementById(buffAttribute[name]['type']+'Buff'+name.replace(/^\w/, c => c.toUpperCase())).appendChild(rectangle);
+	}
+}
+function buffMsOff(name)
 {
 	if(document.getElementById(name+'Detail')!=null)
 		document.getElementById(name+'Detail').remove();
@@ -300,6 +370,8 @@ setInterval(function(){   //所有class=timer的元素时间-1s
                         bldResult(1,'house');
 					else if(buildingAttribute[timer.getAttribute('id').replace(/Timer/g, '')]['type']==2)
 						bldResult(2,timer.getAttribute('id').replace(/Timer/g, ''));
+					else if(buildingAttribute[timer.getAttribute('id').replace(/Timer/g, '')]['type']==3)
+						bldResult(3,timer.getAttribute('id').replace(/Timer/g, ''));
                     workingBuilder-=buildingAttribute[timer.getAttribute('id').replace(/Timer/g, '')]['builderNeed'];
 					timer.parentNode.removeChild(timer);
 					continue;

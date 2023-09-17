@@ -33,7 +33,7 @@ function proVariationMonitor()
 	{
 		if(document.getElementById('popDcrBuff3')==null)
         {
-            infoPopup(1);//在HTML中提醒
+            infoPopup('info1');//在HTML中提醒
             popDecrement(3);
         }
 	}

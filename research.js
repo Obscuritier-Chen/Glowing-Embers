@@ -44,6 +44,7 @@ function researchResult(name)
     window[researchProject[name]['type']+'Attribute']['condition']=0;
     document.getElementById(name).remove();
     researchProject[name]['condition']=1;
+    newBuilding();
     newResearchProject(researchProject[name]['unlock']);
 }
 function research(name)

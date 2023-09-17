@@ -1,14 +1,15 @@
+var gameType=0;//教程或是正常游玩
 //producing
 var popSpeed=1000,proSpeed=2000,eventSpeed=5000;
 var popUpdating;
 var population=3,popLimit=20;
-var production={product1Num:10,product2Num:20,product3Num:20,product4Num:0,jobless:0};
+var production={product1Num:10,product2Num:1,product3Num:0,product4Num:0,jobless:0};
 var specialResident={//特殊人口
 	researcherLv1:2,
 	researcherLv2:0,
 	researcherLv3:1
 }
-var proDisplay={product1Num:1,product2Num:1,product3Num:1,product4Num:0};
+var proDisplay={product1Num:1,product2Num:1,product3Num:0,product4Num:0};
 var popNeed={product1Num:-0.1,product2Num:0,product3Num:0,product4Num:0};
 var item={item1Num:0,item2Num:0};//物品
 var elementBtnAdd={worker1:document.getElementById('btn1ProAdd'),
@@ -19,7 +20,7 @@ var elementBtnSub={worker1:document.getElementById('btn1ProSub'),
 				   worker3:'xzx'};
 var elementPro={product1Num:document.getElementById('product1Num'),//在字典里就获取element,但此时body未加载
 				product2Num:document.getElementById('product2Num'),
-				product3Num:document.getElementById('product3Num'),
+				product3Num:'xzx',
 				product4Num:'xzx',
 			 	jobless:document.getElementById('jobless')};
 var worker={worker1:0,worker2:0,worker3:0,builder:0};
@@ -72,6 +73,7 @@ var buildingAttribute={
 			product3Num:0,
 			product4Num:0
 			},
+		preResearch:null,
 		builderNeed:1,
 		limit:-1,
 		time:60,
@@ -81,7 +83,7 @@ var buildingAttribute={
 	},
 	building1:{
 		type:2,
-		display:1,
+		display:0,
 		num:0,
 		need:{
 			product1Num:0,
@@ -89,6 +91,7 @@ var buildingAttribute={
 			product3Num:0,
 			product4Num:0
 			},
+		preResearch:['research1'],
 		builderNeed:1,
 		limit:1,
 		time:30,
@@ -98,7 +101,7 @@ var buildingAttribute={
 	},
 	building2:{
 		type:2,
-		display:1,
+		display:0,
 		num:0,
 		need:{
 			product1Num:0,
@@ -106,13 +109,12 @@ var buildingAttribute={
 			product3Num:0,
 			product4Num:0
 			},
-		builderNeed:1,
+		preResearch:['research2'],
+		builderNeed:0,
 		limit:1,
 		time:30,
 		text:'forWorker3',
-		consume:{
-			product2Num:-1
-		},
+		consume:null,
 		condition:0
 	},
 	building3:{
@@ -125,6 +127,7 @@ var buildingAttribute={
 			product3Num:0,
 			product4Num:1
 			},
+		preResearch:['research2'],
 		builderNeed:1,
 		limit:1,
 		time:30,
@@ -142,11 +145,14 @@ var buildingAttribute={
 			product3Num:0,
 			product4Num:0
 			},
-		builderNeed:1,
+		preResearch:null,
+		builderNeed:0,
 		limit:1,
 		time:30,
-		text:'test',
-		consume:null,
+		text:'forpopIncrement',
+		consume:{
+			product2Num:-1
+		},
 		condition:0
 	}
 }
@@ -261,38 +267,36 @@ var eventsBuff={//事件发生概率加权，0.01为单位
                 event1:0,
                 event2:0,
                 event3:0};
-var eventsBuffsContent={
-				 buff1:'eventsbuff1',
-				 buff2:'eventsbuff2'
-}
-var produceBuffsContent={
-	buff1:'producebuff1',
-	buff2:'producebuff2'
-}
-var eventsBuffsEffect={//改变事件发生概率的buff的效果
+var buffAttribute={
 	buff1:
 	{
-		eventNum:'event1',
+		type:'event',
+		content:'event1 pos increase',
+		eventName:'event1',
 		effect:10,
-		duration:-1//持续时间 -1是无限时间，以分钟为单位
+		duration:-1
 	},
 	buff2:
 	{
-		eventNum:'event2',
+		type:'event',
+		content:'event2 pos increase',
+		eventName:'event2',
 		effect:20,
 		duration:5
-	}
-}
-var produceBuffsEffect={
-	buff1:
-	{
-		workerNum:'worker1',
-		effect:150,
-		duration:-1//持续时间 -1是无限时间，以分钟为单位
 	},
-	buff2:
+	buff3:
 	{
-		workerNum:'worker3',
+		type:'produce',
+		content:'increase wrk1 efficient',
+		workerName:'worker1',
+		effect:150,
+		duration:-1
+	},
+	buff4:
+	{
+		type:'produce',
+		content:'decrease wrk3 efficient',
+		workerName:'worker3',
 		effect:-100,
 		duration:5
 	}
@@ -300,13 +304,39 @@ var produceBuffsEffect={
 var infoPopupAttribute={
 	info1:
 	{
+		type:'normal',
 		title:'alert',
 		content:'There is no food'
 	},
 	info2:
 	{
+		type:'normal',
 		title:'alert',
 		content:'product2 is not enough'
+	},
+	courseInfo1:
+	{
+		type:'course',
+		title:'courseInfo1',
+		content:'the game is started'
+	},
+	courseInfo2:
+	{
+		type:'course',
+		title:'courseInfo2',
+		content:'this is the inhabited land condition'
+	},
+	courseInfo3:
+	{
+		type:'course',
+		title:'courseInfo3',
+		content:'我们需要更多的人口建设聚居地，现在建造一个火堆以吸引流民'
+	},
+	courseInfo4:
+	{
+		type:'course',
+		title:'courseInfo4',
+		content:'popIncrease begin'
 	}
 }
 //------------------------------------------------------------------------
