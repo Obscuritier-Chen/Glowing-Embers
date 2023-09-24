@@ -136,7 +136,7 @@ var buildingAttribute={
 		condition:0
 	},
 	building4:{
-		type:3,
+		type:4,
 		display:1,
 		num:0,
 		need:{
@@ -154,6 +154,27 @@ var buildingAttribute={
 			product2Num:-1
 		},
 		condition:0
+	},
+	building5:{
+		type:3,
+		display:0,
+		num:0,
+		need:{
+			product1Num:5,
+			product2Num:0,
+			product3Num:0,
+			product4Num:0
+			},
+		preResearch:null,
+		builderNeed:0,
+		limit:1,
+		time:30,
+		text:'add a buff',
+		consume:{
+			product2Num:-1
+		},
+		condition:0,
+		buffName:'buff3'
 	}
 }
 var popDecrementAttribute={
@@ -274,7 +295,9 @@ var buffAttribute={
 		content:'event1 pos increase',
 		eventName:'event1',
 		effect:10,
-		duration:-1
+		duration:-1,
+		condition:0,
+		working:0
 	},
 	buff2:
 	{
@@ -282,7 +305,9 @@ var buffAttribute={
 		content:'event2 pos increase',
 		eventName:'event2',
 		effect:20,
-		duration:5
+		duration:5,
+		condition:0,
+		working:0
 	},
 	buff3:
 	{
@@ -290,7 +315,9 @@ var buffAttribute={
 		content:'increase wrk1 efficient',
 		workerName:'worker1',
 		effect:150,
-		duration:-1
+		duration:-1,
+		condition:0,
+		working:0
 	},
 	buff4:
 	{
@@ -298,7 +325,9 @@ var buffAttribute={
 		content:'decrease wrk3 efficient',
 		workerName:'worker3',
 		effect:-100,
-		duration:5
+		duration:5,
+		condition:0,
+		working:0
 	}
 }
 var infoPopupAttribute={

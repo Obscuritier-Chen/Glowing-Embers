@@ -94,7 +94,7 @@ function productMsOn(name)
 					if(buffAttribute[keyb]['type']!='produce')
 						continue;
                     //alert(produceBuffsEffect[keyb]['workerNum']+key);
-                    if(buffAttribute[keyb]['workerName']==key&&document.getElementById('produceBuff'+keyb.replace(/^\w/, c => c.toUpperCase()))!=null&&workersTable[key][name+'Num']>0)
+                    if(buffAttribute[keyb]['workerName']==key&&buffAttribute[keyb]['condition']==1&&workersTable[key][name+'Num']>0)
                     {
                         var buff=document.createElement('div');
                         buff.style.marginLeft='15px';
@@ -102,6 +102,8 @@ function productMsOn(name)
                             buff.innerText='    '+keyb+':     '+buffAttribute[keyb]['effect']+'%';
                         else if(buffAttribute[keyb]['effect']>0)
                             buff.innerText='    '+keyb+':     +'+buffAttribute[keyb]['effect']+'%';
+						if(buffAttribute[keyb]['working']==0)
+							buff.style.color='red';
                         rectangle.appendChild(buff);
                     }
                 }
@@ -172,7 +174,7 @@ function buildMsOn(name)
 				{
 					need.innerText=key+':  ';
 					var needNum=document.createElement('span');
-					needNum.style.color='red';
+					need.style.color='red';
 					needNum.innerText=buildingAttribute[name]['need'][key];
 					need.appendChild(needNum);
 				}
@@ -204,7 +206,23 @@ function buildingMsOn(name)
         rectangle.setAttribute('id',name+'Detail');
 		rectangle.style.maxWidth='150px';
 		rectangle.style.overflowWrap='break-word';
-		rectangle.innerText=buildingAttribute[name]['text'];
+
+		var content=document.createElement('div');
+		content.innerText=buildingAttribute[name]['text'];
+		rectangle.appendChild(content);
+		if(buildingAttribute[name]['consume']!=null)
+		{
+			var consumeContainer=document.createElement('div');
+			consumeContainer.innerText='consume:';
+			for(var key in buildingAttribute[name]['consume'])
+			{
+				var consume=document.createElement('div');
+				consume.style.marginLeft='15px';
+				consume.innerText=key+':  '+buildingAttribute[name]['consume'][key];
+				consumeContainer.appendChild(consume);
+			}
+			rectangle.appendChild(consumeContainer);
+		}
 		document.getElementById(name).appendChild(rectangle);
 	}
 }
@@ -259,6 +277,13 @@ function buffMsOn(name)
 		rectangle.className='rectangle';
 		rectangle.setAttribute('id',name+'Detail');
 		rectangle.style.whiteSpace='nowrap';
+
+		if(buffAttribute[name]['working']==0)
+		{
+			var wrkCondition=document.createElement('div');
+			wrkCondition.innerText='disabled';
+			rectangle.appendChild(wrkCondition);
+		}
 
 		var type=document.createElement('div');
 		type.innerText='type:  '+buffAttribute[name]['type'];
@@ -372,6 +397,8 @@ setInterval(function(){   //所有class=timer的元素时间-1s
 						bldResult(2,timer.getAttribute('id').replace(/Timer/g, ''));
 					else if(buildingAttribute[timer.getAttribute('id').replace(/Timer/g, '')]['type']==3)
 						bldResult(3,timer.getAttribute('id').replace(/Timer/g, ''));
+					else if(buildingAttribute[timer.getAttribute('id').replace(/Timer/g, '')]['type']==4)
+						bldResult(4,timer.getAttribute('id').replace(/Timer/g, ''));
                     workingBuilder-=buildingAttribute[timer.getAttribute('id').replace(/Timer/g, '')]['builderNeed'];
 					timer.parentNode.removeChild(timer);
 					continue;

@@ -34,13 +34,26 @@ function buildingStopResult(name)
 	if(buildingAttribute[name]['condition']==1)//若崭新停工
 	{
 		switch (name)
-			{
-				case 'building4':
-					infoPopup('info2');
-					break;
-				default:
-					break;
-			}
+		{
+			case 'building4':
+				infoPopup('info2');
+				break;
+			case 'building5':
+				buffDisable('buff3');
+				break;
+			default:
+				break;
+		}
+	}
+}
+function buildingResume(name)//恢复工作
+{
+	buildingAttribute[name]['condition']=1;
+	switch(name)
+	{
+		case 'building5':
+			buffAble('buff3');
+			break;
 	}
 }
 function buildingDisplay(name)//将新的building显示到侧边栏
@@ -106,7 +119,14 @@ function bldResult(type,name)
 		有一个workerLast标签，标记了worker的底线，新的worker从此前插入*/
 		elementWorkNum[name]=document.getElementById(name);
 	}
-	else if(type==3)//特别建筑类型
+	else if(type==3)
+	{
+		buildingAttribute[name]['condition']=1;
+		if(buildingAttribute[name]['num']==buildingAttribute[name]['limit'])
+			document.getElementById(name.replace(/ing/g, "")).nextElementSibling.remove(),document.getElementById(name.replace(/ing/g, "")).remove();//到最大建造次数的删除建筑按钮
+		addBuff(buildingAttribute[name]['buffName']);
+	}
+	else if(type==4)//特别建筑类型
 	{
 		buildingAttribute[name]['condition']=1;
 		if(buildingAttribute[name]['num']==buildingAttribute[name]['limit'])
@@ -142,7 +162,7 @@ function build(name)
 			document.getElementById('bldHouse').appendChild(bldTimer);
 		}
 	}
-	else if(buildingAttribute[name]['type']==2)
+	else
 	{
 		var enoughResources=true;
 		for (var key in buildingAttribute[name]['need'])//确认资源足够建造
@@ -153,7 +173,7 @@ function build(name)
 		if(enoughResources&&(worker['builder']-workingBuilder)>=buildingAttribute[name]['builderNeed'])
 		{
 			for (var key in buildingAttribute[name]['need'])
-			production[key]-=buildingAttribute[name]['need'][key];
+				production[key]-=buildingAttribute[name]['need'][key];
 			for(var key in production)//扣资源
 			{
 				if(elementPro[key]=='xzx') continue;
@@ -162,37 +182,7 @@ function build(name)
 			buildMsOff(name);//disable后mouseout失效需要手动删除
 			workingBuilder+=buildingAttribute[name]['builderNeed'];
 			document.getElementById(name.replace(/ing/g, "")).setAttribute('disabled','true');
-			var bldTimer=document.createElement('span');
-			bldTimer.setAttribute('class','bldTimer');
-			bldTimer.setAttribute('id',name+'Timer');
-			bldTimer.style.marginLeft='5px';
-			bldTimer.style.color='black'
-			var h=Math.floor(buildingAttribute[name]['time']/60/60),m=Math.floor(buildingAttribute[name]['time']/60%60),s=buildingAttribute[name]['time']%60;
-			bldTimer.innerText=h+':'+m+':'+s;
-			document.getElementById(name.replace(/ing/g, "")).appendChild(bldTimer);
-		}
-	}
-	else if(buildingAttribute[name]['type']==3)
-	{
-		var enoughResources=true;
-		for (var key in buildingAttribute[name]['need'])//确认资源足够建造
-		{
-			if(buildingAttribute[name]['need'][key]>production[key])
-				{enoughResources=false;break;}
-		}
-		if(enoughResources&&(worker['builder']-workingBuilder)>=buildingAttribute[name]['builderNeed'])
-		{
-			for (var key in buildingAttribute[name]['need'])
-			production[key]-=buildingAttribute[name]['need'][key];
-			for(var key in production)//扣资源
-			{
-				if(elementPro[key]=='xzx') continue;
-				elementPro[key].innerText=parseInt(production[key]);
-			}
-			buildMsOff(name);//disable后mouseout失效需要手动删除
-			workingBuilder+=buildingAttribute[name]['builderNeed'];
-			document.getElementById(name.replace(/ing/g, "")).setAttribute('disabled','true');
-			var bldTimer=document.createElement('span');
+			var bldTimer=document.createElement('span');//创建建造计时器
 			bldTimer.setAttribute('class','bldTimer');
 			bldTimer.setAttribute('id',name+'Timer');
 			bldTimer.style.marginLeft='5px';

@@ -57,7 +57,8 @@ function produce()
 			}
 			if(enoughProJudge)
 			{
-				buildingAttribute[key]['condition']=1;
+				if(buildingAttribute[key]['condition']==0)
+					buildingResume(key);
 				for(var keyp in buildingAttribute[key]['consume'])
 					production[keyp]+=buildingAttribute[key]['consume'][keyp];
 			}
