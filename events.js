@@ -1,44 +1,16 @@
-﻿function randomEvents()
+﻿function performConfirmEvents(eventName)
 {
-	var prSum=0,coefficient,randomEventsNum;//randomEventsNum是随机事件编号
-	var randomEventsLength=Object.keys(randomEventsPr).length;//获取字典的大小
-	//prPrefixSum
-	prPrefixSum=new Array(randomEventsLength+1);
-	prPrefixSum[0]=0;
-	var i=1;
-	for(var key in randomEventsPr)//和人口增加的思路类似，但概率是预设的
+	switch (eventName)//根据时间编号产生事件效果
 	{
-		prSum+=randomEventsPr[key]*(1+0.01*eventsBuff[key]);//原始概率+buff
-		prPrefixSum[i]=Number(prPrefixSum[i-1]+randomEventsPr[key]*(1+0.01*eventsBuff[key]));
-		i++;
-	}
-	coefficient=1/prSum;
-	coefficient=coefficient.toFixed(7);
-	coefficient=Number(coefficient);
-	for(var i=1;i<=randomEventsLength;i++)
-	{
-		prPrefixSum[i]*=coefficient;
-		prPrefixSum[i]=prPrefixSum[i].toFixed(7);
-		prPrefixSum[i]=Number(prPrefixSum[i]);
-	}
-	randomPr=Math.random();//随机生成0~1之间的数
-	for(var i=1;i<=randomEventsLength;i++)
-	{
-		if(prPrefixSum[i]>=randomPr)
-			{randomEventsNum=i;break;}
-	}
-	return randomEventsNum;
-}
-function performConfirmEvents(randomEventsNum)
-{
-	switch (randomEventsNum)//根据时间编号产生事件效果
-	{
-		case 1:
+		case 'event1':
 			popSub(5);
 			break;
-		case 2:
+		case 'event2':
 			production['product1Num']+=5;
 			elementPro['product1Num'].innerText=parseInt(production['product1Num']);
+			break;
+		case 'lackProduct1':
+			addBuff('buff5');
 			break;
 		default:
 			break;
@@ -46,15 +18,15 @@ function performConfirmEvents(randomEventsNum)
 	productionVariation();
 	proVariationMonitor();
 }
-function performSeletiveEvents(eventNum,btnNum)
+function performSeletiveEvents(eventName,btnNum)
 {
-	switch (eventNum)//根据事件 和 选择产生效果
+	switch (eventName)//根据事件 和 选择产生效果
 	{
-		case 3://事件要用原本的事件号
+		case 'event3'://事件要用原本的事件号
 			switch (btnNum)
 			{
 				case 1:
-					inevitableEvents.push(1);//给预备序列里添加必然事件
+					console.log('test');//inevitableEvents.push(1);//给预备序列里添加必然事件
 					break;
 				case 2:
 					alert('12');
@@ -63,7 +35,7 @@ function performSeletiveEvents(eventNum,btnNum)
 					break;
 			}
 			break;
-		case 4:
+		case 'event4':
 			switch (btnNum)
 			{
 				case 1:
@@ -86,29 +58,29 @@ function performSeletiveEvents(eventNum,btnNum)
 	productionVariation();
 	proVariationMonitor();
 }
-function performTradeEvents(eventNum,btnNum,goodsNum)//大胆一点，买buff/事件
+function performTradeEvents(eventName,btnNum,goodsNum)//大胆一点，买buff/事件
 {
 	var tempFlag=true;
-	for(var key in goodsCost['event'+eventNum]['goods'+btnNum])//判断资源是否足够
+	for(var key in goodsCost[eventName]['goods'+btnNum])//判断资源是否足够
 	{
-		if(production[key]>=goodsCost['event'+eventNum]['goods'+btnNum][key]*goodsNum)
+		if(production[key]>=goodsCost[eventName]['goods'+btnNum][key]*goodsNum)
 			continue
 		else
 			{tempFlag=false;break;}
 	}
 	if(tempFlag)
 	{
-		for(var key in goodsCost['event'+eventNum]['goods'+btnNum])
+		for(var key in goodsCost[eventName]['goods'+btnNum])
 		{
-			production[key]-=goodsCost['event'+eventNum]['goods'+btnNum][key]*goodsNum;//扣资源
+			production[key]-=goodsCost[eventName]['goods'+btnNum][key]*goodsNum;//扣资源
 		}
-		if(tradeEventsGoods['event'+eventNum]['goods'+btnNum+'Type']==1)
+		if(tradeEventsGoods[eventName]['goods'+btnNum+'Type']==1)
 		{
-			production[tradeEventsGoods['event'+eventNum]['goods'+btnNum]]+=goodsNum;
+			production[tradeEventsGoods[eventName]['goods'+btnNum]]+=goodsNum;
 		}
-		else if(tradeEventsGoods['event'+eventNum]['goods'+btnNum+'Type']==2)
+		else if(tradeEventsGoods[eventName]['goods'+btnNum+'Type']==2)
 		{
-			item[tradeEventsGoods['event'+eventNum]['goods'+btnNum]]+=goodsNum;//显示先不写
+			item[tradeEventsGoods[eventName]['goods'+btnNum]]+=goodsNum;//显示先不写
 		}
 		for(var key in production)//刷新production显示
 		{
@@ -119,25 +91,14 @@ function performTradeEvents(eventNum,btnNum,goodsNum)//大胆一点，买buff/�
 	productionVariation();
 	proVariationMonitor();
 }
-function eventsDisplay()
+function eventsDisplay(eventName)
 {
 	if(document.getElementById('eventsPopup') == null)
 	{
-		var randomEventsNum=0;//产生时间编号
-		if(inevitableEvents.length!=0)//必然事件
+		//产生时间编号
+		if(randomEventsAttribute[eventName]['fType']==1)
 		{
-			if(inevitableEventsDelay==0)
-				inevitableEventsDelay=parseInt(Math.random()*10%maxDelay),randomEventsNum=inevitableEvents.shift();
-			else if(inevitableEventsDelay>0)
-				inevitableEventsDelay--,randomEventsNum=randomEvents();
-		}
-		else if(inevitableEvents.length==0)//随机事件
-		{
-			randomEventsNum=randomEvents();
-		}
-		if(randomEventsAttribute['event'+randomEventsNum]['type']==1)
-		{
-			performConfirmEvents(randomEventsNum);//confirm事件 的效果
+			performConfirmEvents(eventName);//confirm事件 的效果
 			var popup = document.createElement('div');
     		popup.setAttribute('id', 'eventsPopup'); // 添加id
     		popup.style.position = 'fixed';
@@ -150,7 +111,7 @@ function eventsDisplay()
 			popup.style.zIndex = '100';
 			// create a new div element for the text
 			var titleDiv = document.createElement('div');//标题
-			titleDiv.innerText = randomEventsAttribute['event'+randomEventsNum]['title'];
+			titleDiv.innerText = randomEventsAttribute[eventName]['title'];
 			titleDiv.style.position = 'absolute';
 			titleDiv.style.top = '10px';
 			//titleDiv.style.left = '50px';
@@ -163,7 +124,7 @@ function eventsDisplay()
 			popup.appendChild(titleDiv);//将此文本加入到popup中
 			//------------------------------------分割线----------------------------------------
 			var contentDiv = document.createElement('div');//内容
-			contentDiv.innerText = randomEventsAttribute['event'+randomEventsNum]['content'];
+			contentDiv.innerText = randomEventsAttribute[eventName]['content'];
 			contentDiv.style.position = 'absolute';
 			contentDiv.style.top = '70px';
 			contentDiv.style.left = '50px';
@@ -186,7 +147,7 @@ function eventsDisplay()
 			// 将popup添加到body中
 			document.body.appendChild(popup);
 		}
-		else if(randomEventsAttribute['event'+randomEventsNum]['type']==2)//选择性事件
+		else if(randomEventsAttribute[eventName]['fType']==2)//选择性事件
 		{
 			var popup = document.createElement('div');
     		popup.setAttribute('id', 'eventsPopup'); // 添加id
@@ -200,7 +161,7 @@ function eventsDisplay()
 			popup.style.zIndex = '100';
 			// create a new div element for the text
 			var titleDiv = document.createElement('div');//标题
-			titleDiv.innerText = randomEventsAttribute['event'+randomEventsNum]['title'];
+			titleDiv.innerText = randomEventsAttribute[eventName]['title'];
 			titleDiv.style.position = 'absolute';
 			titleDiv.style.top = '10px';
 			//titleDiv.style.left = '50px';
@@ -211,7 +172,7 @@ function eventsDisplay()
 			popup.appendChild(titleDiv);//将此文本加入到popup中
 			//------------------------------------分割线----------------------------------------
 			var contentDiv = document.createElement('div');//内容
-			contentDiv.innerText = randomEventsAttribute['event'+randomEventsNum]['content'];
+			contentDiv.innerText = randomEventsAttribute[eventName]['content'];
 			contentDiv.style.position = 'absolute';
 			contentDiv.style.top = '70px';
 			contentDiv.style.left = '50px';
@@ -220,7 +181,7 @@ function eventsDisplay()
 			contentDiv.style.maxWidth = 'calc(100% - 100px)';//距离右边界n px时换行,n=-50时达到右边界，
 			popup.appendChild(contentDiv);//将此文本加入到popup中
 			//------------------------------------分割线----------------------------------------
-			var buttonCount = seletiveEventsSeletion['event'+randomEventsNum]['num']; // 按钮数量
+			var buttonCount = seletiveEventsSeletion[eventName]['num']; // 按钮数量
 			// 创建按钮容器
 			var buttonContainer = document.createElement('div');
 			buttonContainer.style.position = 'absolute';
@@ -233,13 +194,13 @@ function eventsDisplay()
 			for (var i=1;i<=buttonCount;i++)
 			{
 				var button = document.createElement('button');
-				button.innerText = seletiveEventsSeletion['event'+randomEventsNum]['btn'+i];
+				button.innerText = seletiveEventsSeletion[eventName]['btn'+i];
 				button.style.height = '25px';
 				button.style.marginTop='5px';
 				button.style.background = 'none';
 				button.style.border = '1px solid black';
 				button.style.width = '280px';
-				button.setAttribute('onclick','performSeletiveEvents('+randomEventsNum+','+i+')');//设置按钮触发后的效果
+				button.setAttribute('onclick',`performSeletiveEvents('${eventName}',${i})`);//设置按钮触发后的效果
 				buttonContainer.appendChild(button);
 				buttonContainer.appendChild(document.createElement('br'));
 			}
@@ -248,7 +209,7 @@ function eventsDisplay()
 
 			document.body.appendChild(popup);
 		}
-		else if(randomEventsAttribute['event'+randomEventsNum]['type']==3)//贸易事件
+		else if(randomEventsAttribute[eventName]['fType']==3)//贸易事件
 		{
 			var popup = document.createElement('div');
     		popup.setAttribute('id', 'eventsPopup'); // 添加id
@@ -257,14 +218,13 @@ function eventsDisplay()
     		popup.style.left = '50%';
     		popup.style.transform = 'translate(-50%, -50%)';
     		popup.style.backgroundColor = 'white';
-			popup.style.padding = '200px';
+			popup.style.padding = '30px 50px';
 			popup.style.border = '1px solid black';
 			popup.style.zIndex = '100';
 			// create a new div element for the text
 			var titleDiv = document.createElement('div');//标题
-			titleDiv.innerText = randomEventsAttribute['event'+randomEventsNum]['title'];
-			titleDiv.style.position = 'absolute';
-			titleDiv.style.top = '10px';
+			titleDiv.innerText = randomEventsAttribute[eventName]['title'];
+			titleDiv.style.marginTop = '10px';
 			//titleDiv.style.left = '50px';
 			titleDiv.style.fontSize = '22px';//字体大小
 			titleDiv.style.left = '0';
@@ -275,9 +235,8 @@ function eventsDisplay()
 			popup.appendChild(titleDiv);//将此文本加入到popup中
 			//------------------------------------分割线----------------------------------------
 			var contentDiv = document.createElement('div');//内容
-			contentDiv.innerText = randomEventsAttribute['event'+randomEventsNum]['content'];
-			contentDiv.style.position = 'absolute';
-			contentDiv.style.top = '50px';
+			contentDiv.innerText = randomEventsAttribute[eventName]['content'];
+			contentDiv.style.marginTop = '50px';
 			contentDiv.style.left = '50px';
 			contentDiv.style.fontSize = '17px';//字体大小
 			contentDiv.style.wordWrap = 'break-word';//自动换行
@@ -285,12 +244,12 @@ function eventsDisplay()
 			popup.appendChild(contentDiv);//将此文本加入到popup中
 			//------------------------------------分割线----------------------------------------
 			// 创建按钮容器
-			var buttonCount = tradeEventsGoods['event'+randomEventsNum]['num'];//交易数
+			var buttonCount = tradeEventsGoods[eventName]['num'];//交易数
 			var tradement=document.createElement('div');//交易的容器
-			tradement.style.bottom = '30px';
+			tradement.style.marginTop = '30px';
+			tradement.style.marginBottom='30px';
 			tradement.style.left = '50px';
 			tradement.style.right = '0';
-			tradement.style.position='absolute';
 			for (var i=1;i<=buttonCount;i++)
 			{
 				var buttonContainer = document.createElement('div');//每个交易的容器
@@ -299,38 +258,42 @@ function eventsDisplay()
 				buttonContainer.style.right = '0';
 				//------------------------------------------------------------------------
 				var goods=document.createElement('span')
-				goods.innerText=tradeEventsGoods['event'+randomEventsNum]['goods'+i+'Content'];
+				goods.innerText=tradeEventsGoods[eventName]['goods'+i+'Content']+':';
 
 				buttonContainer.appendChild(goods);
 				var button1 = document.createElement('button');//1个
-				button1.innerText = 1;
+				button1.innerText = 'x1';
 				button1.style.height = '30px';
 				button1.style.width='30px';
 				button1.style.marginLeft='20px';
 				button1.style.marginTop='10px';
 				button1.style.background = 'none';
-				button1.style.border = '1px solid black';
-				button1.setAttribute('onclick','performTradeEvents('+randomEventsNum+','+i+','+'1'+')');//设置按钮触发后的效果
+				button1.style.border = 'none';
+				button1.style.fontSize='18px';
+				//button1.onclick=`performTradeEvents(${eventName},${i},'1')`;
+				button1.setAttribute('onclick',`performTradeEvents('${eventName}','${i}',1)`);//设置按钮触发后的效果
 				buttonContainer.appendChild(button1);
 				var button5 = document.createElement('button');//5个
-				button5.innerText = 5;
+				button5.innerText = 'x5';
 				button5.style.height = '30px';
 				button5.style.width='30px';
 				button5.style.marginLeft='20px';
 				button5.style.marginTop='10px';
 				button5.style.background = 'none';
-				button5.style.border = '1px solid black';
-				button5.setAttribute('onclick','performTradeEvents('+randomEventsNum+','+i+','+'5'+')');
+				button5.style.border = 'none';
+				button5.style.fontSize='18px';
+				button5.setAttribute('onclick',`performTradeEvents('${eventName}','${i}',5)`);
 				buttonContainer.appendChild(button5);
 				var button10 = document.createElement('button');//10个
-				button10.innerText = 10;
+				button10.innerText = 'x10';
 				button10.style.height = '30px';
 				button10.style.width='30px';
 				button10.style.marginLeft='20px';
 				button10.style.marginTop='10px';
 				button10.style.background = 'none';
-				button10.style.border = '1px solid black';
-				button10.setAttribute('onclick','performTradeEvents('+randomEventsNum+','+i+','+'10'+')');
+				button10.style.border = 'none';
+				button10.style.fontSize='18px';
+				button10.setAttribute('onclick',`performTradeEvents('${eventName}','${i}',10)`);
 				buttonContainer.appendChild(button10);
 				tradement.appendChild(buttonContainer);
 			}
@@ -351,4 +314,39 @@ function eventsDisplay()
 			document.body.appendChild(popup);
 		}
 	}
+}
+function randomEventSelctor()
+{
+	var type;//首先随机出type
+
+	var prSum=0,coefficient,tempNum;
+	var typeLength=Object.keys(cTypePr).length;
+	prPrefixSum=new Array(typeLength+1);
+	prPrefixSum[0]=0;
+	var i=1;
+	for(var key in cTypePr)
+	{
+		prSum+=cTypePr[key];
+		prPrefixSum[i]=Number(prPrefixSum[i-1]+cTypePr[key]);
+		i++;
+	}
+	coefficient=1/prSum;
+	coefficient=coefficient.toFixed(7);
+	coefficient=Number(coefficient);
+	randomPr=Math.random();
+	for(var i=1;i<=typeLength;i++)
+	{
+		prPrefixSum[i]*=coefficient
+		if(prPrefixSum[i]>=randomPr)
+			{tempNum=i;break;}
+	}
+	var i=1;
+	for(var key in cTypePr)
+	{
+		if(tempNum==i)
+			{type=key;break;}
+		i++;
+	}
+
+	//console.log(type);
 }

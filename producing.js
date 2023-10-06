@@ -31,11 +31,14 @@ function proVariationMonitor()
 	newBuilding();//更新可以新建的建筑
 	if(production['product1Num']==0)
 	{
-		if(document.getElementById('popDcrBuff3')==null)
+		if(document.getElementById('populationBuffBuff5')==null)
         {
-            infoPopup('info1');//在HTML中提醒
-            popDecrement(3);
+            runFunction(eventsDisplay,'lackProduct1');
         }
+	}
+	else if(production['product1Num']>0&&document.getElementById('populationBuffBuff5')!=null)
+	{
+		removeBuff('buff5');
 	}
 }
 function produce()
@@ -145,80 +148,31 @@ function popIncrement(differ)//计算人口增加量
 		if(prPrefixSum[i]>=randomPr)
 			{increment=i;break;}
 	}
+	increment=parseInt(increment*popVariationEff/100);
 	return increment;
-}
-function popDcrStopCondition(num)
-{
-	switch (num) 
-	{
-		case 3:
-			{
-				if(production['product1Num']>0)
-					return true;
-				else 
-					return false;
-				break;
-			}
-		
-	}
-}
-function popDecrement(num)//由于不同原因造成的人口减少
-{
-	clearInterval(popUpdating);//首先暂停人口增长
-	var buffDiv=document.createElement('div');//创建新buff 元素
-	buffDiv.setAttribute('id','popDcrBuff'+num);
-	buffDiv.innerHTML=popDecrementAttribute['dcr'+num]['name'];
-	document.getElementById("buffs").insertBefore(buffDiv,document.getElementById("buffLast"));
-	if(popDecrementAttribute['dcr'+num]['times']!=-1)
-	{
-		setTimeout(function(num){
-			document.getElementById('popDcrBuff'+num).remove();
-			popUpdating = setInterval(popUpdate, popSpeed); 
-		},popDecrementAttribute['dcr'+num]['times']*popSpeed,num);
-		var h=Math.floor(popDecrementAttribute['dcr'+num]['times']*popSpeed/1000/60/60),m=Math.floor(popDecrementAttribute['dcr'+num]['times']*popSpeed/1000/60%60),s=popDecrementAttribute['dcr'+num]['times']*popSpeed/1000%60;
-		buffDiv.innerHTML+=' <span class="timer">'+h+':'+m+':'+s+'</span>';
-		//每轮间隔一个popSpeed
-		totalPop=population;
-		for(var i=1;i<=popDecrementAttribute['dcr'+num]['times'];i++)//每轮减少一定数量/比例的人口
-		{
-			//alert(i);
-			if(popDecrementAttribute['dcr'+num]['cnt'][i]>=1)
-				setTimeout(function(num,i){
-					popSub(popDecrementAttribute['dcr'+num]['cnt'][i]);//差点忘了写了这个函数
-				},popSpeed*i,num,i);
-				
-			else if(popDecrementAttribute['dcr'+num]['cnt'][i]<1)
-				setTimeout(function(num,i){
-					popSub(Math.ceil(totalPop*popDecrementAttribute['dcr'+num]['cnt'][i]));
-				},popSpeed*i,num,i);
-		}
-	}
-	else if(popDecrementAttribute['dcr'+num]['times']==-1)//有条件解除型
-	{
-		var totalPop=population;
-		var buffDiv=document.createElement('div');//创建新buff 元素
-		buffDiv.setAttribute('id','popDcrBuff'+num);
-		buffDiv.innerHTML=popDecrementAttribute['dcr'+num]['name'];
-		window['popDcr'+num]=setInterval(function(num,totalPop){
-			if(popDcrStopCondition(num))
-				clearInterval(window['popDcr'+num]),document.getElementById('popDcrBuff'+num).remove(),popUpdating = setInterval(popUpdate, popSpeed);
-			if(popDecrementAttribute['dcr'+num]['cnt']>=1)
-				popSub(popDecrementAttribute['dcr'+num]['cnt']);
-			else if(popDecrementAttribute['dcr'+num]['cnt']<1)
-				popSub(Math.ceil(totalPop*popDecrementAttribute['dcr'+num]['cnt']));
-		},popSpeed,num,totalPop);
-	}
 }
 function popUpdate()
 {
 	var deltapop=0;//现在人口增长速度看起来可能很怪，不必惊慌只是函数算出来增加量是0
-	if(popLimit-population>0)//否则有可能有奇怪的bug,直接限制比较方便
+	if(popLimit-population>0&&popVariationEff>0)//否则有可能有奇怪的bug,直接限制比较方便
 	{
 		deltapop=popIncrement(popLimit-population);
 		deltapop=Math.min(popLimit-population,deltapop);//保证人口数量不超过人口限制
 	}
-	population+=deltapop;//计算人口量结果
-	production['jobless']+=deltapop;
+	else if(population>0&&popVariationEff<0)
+	{
+		deltapop=popIncrement(population);
+		deltapop=Math.max(-population,deltapop)
+	}
+	if(deltapop>=0)
+	{
+		population+=deltapop;//计算人口量结果
+		production['jobless']+=deltapop;
+	}
+	else if(deltapop<0)
+	{
+		popSub(-deltapop);
+	}
 	document.getElementById('popNum').innerText=population;
 	elementPro['jobless'].innerText=production['jobless'];
 	productionVariation();

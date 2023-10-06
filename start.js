@@ -57,7 +57,6 @@ function course()
             infoPopup('courseInfo3');
             document.getElementById('courseInfo3Button').onclick=()=>{
                 document.getElementById('middle').style.display='';
-                document.getElementById('middleTop').style.display='flex';
                 document.getElementById('build').style.display='';
                 document.getElementById('worker').style.display='none';
                 document.getElementById('middleBottom').style.display='none';

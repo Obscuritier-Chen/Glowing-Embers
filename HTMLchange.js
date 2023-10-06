@@ -295,7 +295,7 @@ function buffMsOn(name)
 		{
 			var eventEffect=document.createElement('div');
 			eventEffect.style.marginLeft='15px';
-			eventEffect.innerText=buffAttribute[name]['eventName']+':  '+((buffAttribute[name]['effect']>0) ? '+'+buffAttribute[name]['effect'] : buffAttribute[name]['effect'])+'%';
+			eventEffect.innerText=buffAttribute[name]['eventName']!=null ? buffAttribute[name]['eventName'] : buffAttribute[name]['typeName']+':  '+((buffAttribute[name]['effect']>0) ? '+'+buffAttribute[name]['effect'] : buffAttribute[name]['effect'])+'%';
 			effect.appendChild(eventEffect);
 		}
 		else if(buffAttribute[name]['type']=='produce')

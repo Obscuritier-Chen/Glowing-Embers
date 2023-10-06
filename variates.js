@@ -2,7 +2,7 @@ var gameType=0;//教程或是正常游玩
 //producing
 var popSpeed=1000,proSpeed=2000,eventSpeed=5000;
 var popUpdating;
-var population=3,popLimit=20;
+var population=3,popLimit=20,popVariationEff=100;
 var production={product1Num:10,product2Num:1,product3Num:0,product4Num:0,jobless:0};
 var specialResident={//特殊人口
 	researcherLv1:2,
@@ -198,39 +198,63 @@ var popDecrementAttribute={
 //events
 var inevitableEvents=[];//必然事件的堆栈
 var inevitableEventsDelay=0,maxDelay=4;
-var randomEventsPr={event1:10,	
-                    event2:10,
-                    event3:10};
+var cTypePr={//content type即天气 营地内部事件 新人事件 外部事件等
+	none:100,//没有事件也是事件
+	type1:100,
+	type2:100,
+	type3:100
+}
+var randomEventList={//这里是cType
+	type1:[null,'event1','event2'],
+	type2:[null,'event3','event4'],
+	type3:[null,'event5']
+}
 var randomEventsAttribute={
     event1:
     {//事件标题 内容 类型
         title:'event1',
         content:'population-5',
-        type:1
+        fType:1,//form type 即confirm/selective/trade
+		probability:100,
+		available:1
     },
     event2:
     {
         title:'event2',
         content:'product1+5',
-        type:1
+        fType:1,
+		probability:100,
+		available:1
     },
     event3:
     {
         title:'event3',
         content:'test3',
-        type:2
+        fType:2,
+		probability:100,
+		available:1
     },
 	event4:
     {
         title:'event4',
         content:'test4',
-        type:2
+        fType:2,
+		probability:100,
+		available:1
     },
 	event5:
 	{
 		title:'event5',
 		content:'tradement',
-		type:3
+		fType:3,
+		probability:100,
+		available:1
+	},
+	lackProduct1:
+	{
+		title:'lackProduct1',
+		content:'the lack of product1 lead to pop decrease',
+		fType:1
 	}
 };
 var seletiveEventsSeletion={
@@ -268,8 +292,7 @@ var goodsCost={//目前的交易只能消耗产品 未来可以给消耗品一�
 	{
 		goods1:
 		{
-			product2Num:2,
-			product3Num:2
+			product2Num:1,
 		},
 		goods2:
 		{
@@ -292,9 +315,9 @@ var buffAttribute={
 	buff1:
 	{
 		type:'event',
-		content:'event1 pos increase',
+		content:'event1 pos decrease',
 		eventName:'event1',
-		effect:10,
+		effect:-100,
 		duration:-1,
 		condition:0,
 		working:0
@@ -304,8 +327,8 @@ var buffAttribute={
 		type:'event',
 		content:'event2 pos increase',
 		eventName:'event2',
-		effect:20,
-		duration:5,
+		effect:100,
+		duration:-1,
 		condition:0,
 		working:0
 	},
@@ -326,6 +349,26 @@ var buffAttribute={
 		workerName:'worker3',
 		effect:-100,
 		duration:5,
+		condition:0,
+		working:0
+	},
+	buff5:
+	{
+		type:'population',
+		content:'decrease popIncrease speed',
+		effect:-110,
+		duration:-1,
+		condition:0,
+		working:0
+	},
+	buff6:
+	{
+		type:'event',
+		content:'event2 pos increase',
+		eventName:null,
+		typeName:'type1',//cType
+		effect:-100,
+		duration:-1,
 		condition:0,
 		working:0
 	}
