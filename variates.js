@@ -199,7 +199,7 @@ var popDecrementAttribute={
 var inevitableEvents=[];//必然事件的堆栈
 var inevitableEventsDelay=0,maxDelay=4;
 var cTypePr={//content type即天气 营地内部事件 新人事件 外部事件等
-	none:100,//没有事件也是事件
+	none:50,//没有事件也是事件
 	type1:100,
 	type2:100,
 	type3:100
@@ -209,52 +209,79 @@ var randomEventList={//这里是cType
 	type2:[null,'event3','event4'],
 	type3:[null,'event5']
 }
-var randomEventsAttribute={
+var eventsAttribute={
     event1:
     {//事件标题 内容 类型
         title:'event1',
         content:'population-5',
         fType:1,//form type 即confirm/selective/trade
+		cType:'type1',
 		probability:100,
-		available:1
+		available:1,
+		displayed:0,
+		preEvent:null
     },
     event2:
     {
         title:'event2',
         content:'product1+5',
         fType:1,
+		cType:'type1',
 		probability:100,
-		available:1
+		available:1,
+		displayed:0,
+		preEvent:null
     },
     event3:
     {
         title:'event3',
         content:'test3',
         fType:2,
+		cType:'type2',
 		probability:100,
-		available:1
+		available:1,
+		displayed:0,
+		preEvent:null
     },
 	event4:
     {
         title:'event4',
         content:'test4',
         fType:2,
+		cType:'type2',
 		probability:100,
-		available:1
+		available:1,
+		displayed:0,
+		preEvent:null
     },
 	event5:
 	{
 		title:'event5',
 		content:'tradement',
 		fType:3,
+		cType:'type3',
 		probability:100,
-		available:1
+		available:1,
+		displayed:0,
+		preEvent:null
+	},
+	event6:
+	{
+		title:'event6',
+		content:'test6',
+		fType:1,
+		cType:'type1',
+		probability:1000,
+		available:0,
+		displayed:0,
+		preEvent:['event1']
 	},
 	lackProduct1:
 	{
 		title:'lackProduct1',
 		content:'the lack of product1 lead to pop decrease',
-		fType:1
+		displayed:0,
+		fType:1,
 	}
 };
 var seletiveEventsSeletion={

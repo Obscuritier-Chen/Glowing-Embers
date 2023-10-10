@@ -6,7 +6,7 @@ function buffDisable(name)
 		document.getElementById(buffAttribute[name]['type']+'Buff'+name.replace(/^\w/, c => c.toUpperCase())).style.color='grey';
 		if(buffAttribute[name]['type']=='event')
 		{
-			eventsBuff[buffAttribute[name]['eventName']]-=buffAttribute[name]['effect'];
+			buffAttribute[name]['eventName']!=null ? eventsAttribute[buffAttribute[name]['eventName']]['probability']-=buffAttribute[name]['effect'] : cTypePr[buffAttribute[name]['typeName']]-=buffAttribute[name]['effect'];
 		}
 		else if(buffAttribute[name]['type']=='produce')
 		{
@@ -27,7 +27,7 @@ function buffAble(name)
 		document.getElementById(buffAttribute[name]['type']+'Buff'+name.replace(/^\w/, c => c.toUpperCase())).style.color='';
 		if(buffAttribute[name]['type']=='event')
 		{
-			eventsBuff[buffAttribute[name]['eventName']]+=buffAttribute[name]['effect'];
+			buffAttribute[name]['eventName']!=null ? eventsAttribute[buffAttribute[name]['eventName']]['probability']+=buffAttribute[name]['effect'] : cTypePr[buffAttribute[name]['typeName']]+=buffAttribute[name]['effect'];
 		}
 		else if(buffAttribute[name]['type']=='produce')
 		{
@@ -46,7 +46,7 @@ function removeBuff(name)
 	buffAttribute[name]['working']=0;
 	if(buffAttribute[name]['type']=='event')
 	{
-		buffAttribute[name]!=null ? eventsBuff[buffAttribute[name]['eventName']]-=buffAttribute[name]['effect'] : cTypePr[buffAttribute[name]['typeName']]-=buffAttribute[name]['effect'];
+		buffAttribute[name]['eventName']!=null ? eventsAttribute[buffAttribute[name]['eventName']]['probability']-=buffAttribute[name]['effect'] : cTypePr[buffAttribute[name]['typeName']]-=buffAttribute[name]['effect'];
 	}
 	else if(buffAttribute[name]['type']=='produce')
 	{
@@ -68,7 +68,7 @@ function addBuff(name)
 			buffAttribute[name]['condition']=1;
 			buffAttribute[name]['working']=1;
 			if(buffAttribute[name]['eventName']!=null)
-				eventsBuff[buffAttribute[name]['eventName']]+=buffAttribute[name]['effect'];
+				eventsAttribute[buffAttribute[name]['eventName']]['probability']+=buffAttribute[name]['effect'];
 			else if(buffAttribute[name]['eventName']==null)
 				cTypePr[buffAttribute[name]['typeName']]+=buffAttribute[name]['effect'];
 			var buffDiv=document.createElement('div');//创建新buff 元素
@@ -87,7 +87,7 @@ function addBuff(name)
 			{
 				setTimeout(function(name){
 					document.getElementById('eventBuff'+name.replace(/^\w/, c => c.toUpperCase())).remove();
-					buffAttribute[name] != null ? eventsBuff[buffAttribute[name]['eventName']] -= buffAttribute[name]['effect'] : cTypePr[buffAttribute[name]['typeName']] -= buffAttribute[name]['effect'];
+					buffAttribute[name]['eventName'] != null ? eventsAttribute[buffAttribute[name]['eventName']]['probability']-=buffAttribute[name]['effect'] : cTypePr[buffAttribute[name]['typeName']] -= buffAttribute[name]['effect'];
 					buffAttribute[name]['condition']=0
 				},buffAttribute[name]['duration']*1000*60,name);
 				//写这个破 时间结束就删除的玩意花了我一个晚上 
