@@ -203,6 +203,17 @@
 			padding-bottom: 5px;
 			margin-bottom:20px;
 		}
+		.eventPopup
+		{
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			background-color: white;
+			padding: 200px;
+			border: 1px solid black;
+			z-index: 100;
+		}
     </style>
 </head>
 <body onload="initialization()">
@@ -237,7 +248,7 @@
 					<div id="workerInfo" style="float: right; font-size: 12px;"><span style="margin-right: 11px;">-5</span><span style="margin-right: 26px;">-1</span><span style="margin-right: 6px;">+1</span><span style="margin-right: 2px;">+5</span></div>
 					<br>
 					<div id="builders" style="margin-bottom: 10px;">
-						<span id="builderName" onmouseover="workerMsOn('builder')" onmouseout="workerMsOff('builder')" style="margin-right: 5px;">builderNum:  </span>
+						<span id="builderName" onmouseover="workerMsOn('builder')" onmouseout="workerMsOff('builder')" style="margin-right: 20px;">建筑工人:  </span>
 						<span class="wrkAddSub" style="float: right;">
 							<button class="btnSubClass" onclick="WorkersAdd(-5,'builder')"><span class="bigSub"></span></button><button class="btnSubClass" onclick="WorkersAdd(-1,'builder')"><span class="sub"></span></button>
 							<span id="builder">0</span>
@@ -245,7 +256,7 @@
 						</span>
 					</div>
 					<div id="worker1s" style="margin-bottom: 10px;">
-						<span id="worker1Name" onmouseover="workerMsOn('worker1')" onmouseout="workerMsOff('worker1')" style="margin-right: 5px;">worker1Num:  </span>
+						<span id="worker1Name" onmouseover="workerMsOn('worker1')" onmouseout="workerMsOff('worker1')" style="margin-right: 20px;">拾荒者:  </span>
 						<span class="wrkAddSub" style="float: right;">
 							<button class="btnSubClass" onclick="WorkersAdd(-5,'worker1')"><span class="bigSub"></span></button><button class="btnSubClass" onclick="WorkersAdd(-1,'worker1')"><span class="sub"></span></button>
 							<span id="worker1">0</span>

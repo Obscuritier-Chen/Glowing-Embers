@@ -146,6 +146,8 @@ function buildMsOn(name)
 		var rectangle = document.createElement('div');
         rectangle.className = 'rectangle';
         rectangle.setAttribute('id',name+'Detail');
+		//rectangle.style.whiteSpace='nowrap';
+
 		var text=document.createElement('div');
 		text.style.maxWidth='150px';
 		text.style.overflowWrap='break-word';
@@ -183,11 +185,13 @@ function buildMsOn(name)
 		}
 
 		var builder=document.createElement('div');
+		builder.style.whiteSpace='nowrap';
 		if(buildingAttribute[name]['builderNeed']>worker['builder']-workingBuilder)	
 			builder.style.color='red';
 		builder.innerText='builderNeed:  '+buildingAttribute[name]['builderNeed'];
 		rectangle.appendChild(builder);
 		var time=document.createElement('div');
+		time.style.whiteSpace='nowrap';
 		time.innerText='Take time:  '+buildingAttribute[name]['time']+'s';
 		rectangle.appendChild(time);
 	}

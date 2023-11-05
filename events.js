@@ -54,7 +54,7 @@ function performSeletiveEvents(eventName,btnNum)
 		default:
 			break;
 	}
-	document.getElementById('eventsPopup').remove();//移除popup
+	document.getElementById(eventName).remove();//移除popup
 	productionVariation();
 	proVariationMonitor();
 }
@@ -112,12 +112,68 @@ function newEventAble()
 		}
 	}
 }
+function hideEvent(eventName)
+{
+	document.getElementById(eventName).style.display='none';
+	if(document.getElementById('hideEventContainer')==null)
+	{
+		var hideEventContainer=document.createElement('div');//隐藏事件容器
+		hideEventContainer.id='hideEventContainer';
+		hideEventContainer.innerText='隐藏的事件:';
+		hideEventContainer.style.position='absolute';
+		document.getElementById('right').appendChild(hideEventContainer);
+
+		var hideEventButton=document.createElement('div');//隐藏的事件
+		hideEventButton.innerText=eventName;
+		hideEventButton.style.width='fit-content';//与innerText相适应
+		hideEventButton.style.marginBottom='5px';
+		hideEventButton.style.border='1px solid black';
+		hideEventButton.style.backgroundColor='white';
+		hideEventButton.style.padding='1px 4px';
+		hideEventButton.onclick=function(){
+			if(document.getElementById('hideEventContainer').childElementCount==1)//若最后一个 删除容器
+			{
+				document.getElementById(eventName).style.display='';
+				document.getElementById('hideEventContainer').remove();
+			}
+			else if(document.getElementById('hideEventContainer').childElementCount>1)//仅删除自己
+			{
+				document.getElementById(eventName).style.display='';
+				hideEventButton.remove();
+			}
+		}
+		hideEventContainer.appendChild(hideEventButton);
+	}
+	else
+	{
+		var hideEventButton=document.createElement('div');//隐藏的事件
+		hideEventButton.innerText=eventName;
+		hideEventButton.style.width='fit-content';//与innerText相适应
+		hideEventButton.style.marginBottom='7px';
+		hideEventButton.style.border='1px solid black';
+		hideEventButton.style.backgroundColor='white';
+		hideEventButton.style.padding='1px 4px';
+		hideEventButton.onclick=function(){
+			if(document.getElementById('hideEventContainer').childElementCount==1)
+			{
+				document.getElementById(eventName).style.display='';
+				document.getElementById('hideEventContainer').remove();
+			}
+			else if(document.getElementById('hideEventContainer').childElementCount>1)
+			{
+				document.getElementById(eventName).style.display='';
+				hideEventButton.remove();
+			}
+		}
+		document.getElementById('hideEventContainer').appendChild(hideEventButton);
+	}
+}
 function eventsDisplay(eventName)
 {
 	newEventAble();//首先检测是否有新事件可用
 	if(eventName==null)
 		eventName=randomEventSelctor();
-	if(document.getElementById('eventsPopup') == null&& eventsAttribute[eventName]['available']==1)
+	if((eventsAttribute[eventName]['available']==1&&document.querySelectorAll('.eventPopup').length==0)||(eventsAttribute[eventName]['available']==null))
 	{
 		eventsAttribute[eventName]['displayed']=1;
 		//产生时间编号
@@ -125,15 +181,8 @@ function eventsDisplay(eventName)
 		{
 			performConfirmEvents(eventName);//confirm事件 的效果
 			var popup = document.createElement('div');
-    		popup.setAttribute('id', 'eventsPopup'); // 添加id
-    		popup.style.position = 'fixed';
-    		popup.style.top = '50%';
-    		popup.style.left = '50%';
-    		popup.style.transform = 'translate(-50%, -50%)';
-    		popup.style.backgroundColor = 'white';
-			popup.style.padding = '200px';
-			popup.style.border = '1px solid black';
-			popup.style.zIndex = '100';
+			popup.className='eventPopup';
+			popup.id=eventName;
 			// create a new div element for the text
 			var titleDiv = document.createElement('div');//标题
 			titleDiv.innerText = eventsAttribute[eventName]['title'];
@@ -169,21 +218,30 @@ function eventsDisplay(eventName)
 				popup.remove(); // 点击关闭按钮时移除popup
 			});
 			popup.appendChild(confirmButton);
+			//------------------------------------分割线----------------------------------------
+			var container=document.createElement('div');
+			container.style.position = 'absolute';
+			container.style.top = '15px';
+			container.style.right = '10px';
+			container.style.height='30px';
+			container.style.width='30px';
+			container.onclick=function(){hideEvent(eventName);}
+			popup.appendChild(container);
+
+			var hideButton=document.createElement('div');
+			hideButton.style.height='2.5px';
+			hideButton.style.width='27px';
+			hideButton.style.marginTop='15px';
+			hideButton.style.backgroundColor='black';
+			container.appendChild(hideButton);
 			// 将popup添加到body中
 			document.body.appendChild(popup);
 		}
 		else if(eventsAttribute[eventName]['fType']==2)//选择性事件
 		{
 			var popup = document.createElement('div');
-    		popup.setAttribute('id', 'eventsPopup'); // 添加id
-    		popup.style.position = 'fixed';
-    		popup.style.top = '50%';
-    		popup.style.left = '50%';
-    		popup.style.transform = 'translate(-50%, -50%)';
-    		popup.style.backgroundColor = 'white';
-			popup.style.padding = '200px';
-			popup.style.border = '1px solid black';
-			popup.style.zIndex = '100';
+    		popup.className='eventPopup';
+			popup.id=eventName;
 			// create a new div element for the text
 			var titleDiv = document.createElement('div');//标题
 			titleDiv.innerText = eventsAttribute[eventName]['title'];
@@ -232,37 +290,46 @@ function eventsDisplay(eventName)
 
 			popup.appendChild(buttonContainer);
 
+			var container=document.createElement('div');
+			container.style.position = 'absolute';
+			container.style.top = '15px';
+			container.style.right = '10px';
+			container.style.height='30px';
+			container.style.width='30px';
+			container.onclick=function(){hideEvent(eventName);}
+			popup.appendChild(container);
+
+			var hideButton=document.createElement('div');
+			hideButton.style.height='2.5px';
+			hideButton.style.width='27px';
+			hideButton.style.marginTop='15px';
+			hideButton.style.backgroundColor='black';
+			container.appendChild(hideButton);
+
 			document.body.appendChild(popup);
 		}
 		else if(eventsAttribute[eventName]['fType']==3)//贸易事件
 		{
 			var popup = document.createElement('div');
-    		popup.setAttribute('id', 'eventsPopup'); // 添加id
-    		popup.style.position = 'fixed';
-    		popup.style.top = '50%';
-    		popup.style.left = '50%';
-    		popup.style.transform = 'translate(-50%, -50%)';
-    		popup.style.backgroundColor = 'white';
-			popup.style.padding = '30px 50px';
-			popup.style.border = '1px solid black';
-			popup.style.zIndex = '100';
+    		popup.className='eventPopup';
+			popup.id=eventName;
 			// create a new div element for the text
 			var titleDiv = document.createElement('div');//标题
 			titleDiv.innerText = eventsAttribute[eventName]['title'];
+			titleDiv.style.position='absolute';
 			titleDiv.style.marginTop = '10px';
-			//titleDiv.style.left = '50px';
 			titleDiv.style.fontSize = '22px';//字体大小
+			titleDiv.style.top='10px';
 			titleDiv.style.left = '0';
 			titleDiv.style.right = '0';
 			titleDiv.style.textAlign = 'center';
-			//titleDiv.style.wordWrap = 'break-word';//自动换行
-			//titleDiv.style.maxWidth = 'calc(100% - 90px)';//难不成你个标题还换行？
 			popup.appendChild(titleDiv);//将此文本加入到popup中
 			//------------------------------------分割线----------------------------------------
 			var contentDiv = document.createElement('div');//内容
 			contentDiv.innerText = eventsAttribute[eventName]['content'];
-			contentDiv.style.marginTop = '50px';
+			contentDiv.style.position='absolute';
 			contentDiv.style.left = '50px';
+			contentDiv.style.top='70px';
 			contentDiv.style.fontSize = '17px';//字体大小
 			contentDiv.style.wordWrap = 'break-word';//自动换行
 			contentDiv.style.maxWidth = 'calc(100% - 100px)';//距离右边界n px时换行,n=-50时达到右边界，
@@ -271,6 +338,7 @@ function eventsDisplay(eventName)
 			// 创建按钮容器
 			var buttonCount = tradeEventsGoods[eventName]['num'];//交易数
 			var tradement=document.createElement('div');//交易的容器
+			tradement.style.position='absolute';
 			tradement.style.marginTop = '30px';
 			tradement.style.marginBottom='30px';
 			tradement.style.left = '50px';
@@ -335,10 +403,27 @@ function eventsDisplay(eventName)
 				popup.remove(); // 点击关闭按钮时移除popup
 			});
 			popup.appendChild(confirmButton);
-			//popup.appendChild(buttonContainer);
+
+			var container=document.createElement('div');
+			container.style.position = 'absolute';
+			container.style.top = '15px';
+			container.style.right = '10px';
+			container.style.height='30px';
+			container.style.width='30px';
+			container.onclick=function(){hideEvent(eventName);}
+			popup.appendChild(container);
+
+			var hideButton=document.createElement('div');
+			hideButton.style.height='2.5px';
+			hideButton.style.width='27px';
+			hideButton.style.marginTop='15px';
+			hideButton.style.backgroundColor='black';
+			container.appendChild(hideButton);
+
 			document.body.appendChild(popup);
 		}
 	}
+	newEventAble();
 }
 function randomEventSelctor()
 {
@@ -397,4 +482,72 @@ function randomEventSelctor()
 			{eventName=randomEventList[type][i];break;}
 	}
 	return eventName;
+}
+function eventAvailableJudge(eventName)
+{
+	//前置事件(不是该事件的父事件)
+	for(var i=0;i<eventCondition[eventName].preEvent.length;i++)
+		if(eventsAttribute[eventCondition[eventName].preEvent[i]].displayed==0)
+			return false;
+	//最小产品
+	for(var key in eventCondition[eventName].minProduct)
+		if(production[key]<eventCondition[eventName].minProduct[key])
+			return false;
+	//前置建筑
+	for(var i=0;i<eventCondition[eventName].preBuilding.length;i++)
+		if(buildingAttribute[eventCondition[eventName].preBuilding[i]].num==0)
+			return false;
+	//前置工人
+	for(var key in eventCondition[eventName].minWorker)
+		if(worker[key]<eventCondition[eventName].minWorker[key])
+			return false;
+	if(population<eventCondition[eventName].minPop)
+		return false;
+	//前置buff
+	for(var i=0;i<eventCondition[eventName]['preBuff'].length;i++)
+		if(buffAttribute[eventCondition[eventName].preBuff[i]].working==0)
+			return false;
+	switch (eventName)//特殊情况
+	{
+		case 'chainEvent2':
+			console.log('test');
+			return false;
+			break;
+	
+		default:
+			break;
+	}
+	return true;
+}
+function eventChainGenerator()
+{
+	var pushQueue=[];
+	for(var i=0;i<eventChainQueue.length;i++)
+	{
+		if(eventAvailableJudge()&&document.getElementById('eventsPopup')==null)
+		{
+			eventsDisplay(eventNameChainQueue[i]);
+			if(eventChainQueue[i]==null)//如果这是事件链的最后一个
+			{
+				eventChainQueue[i]=-1,eventNameChainQueue[i]=-1;
+				continue;
+			}
+			for(var key in eventChainQueue[i])
+				eventNameChainQueue.push(key);
+			var tempArray;
+			tempArray=Object.values(eventChainQueue[i]);
+			for(var j=0;j<tempArray.length;j++)
+				pushQueue.push(tempArray[j]);
+			eventChainQueue[i]=-1,eventNameChainQueue[i]=-1;
+		}
+	}
+	//删除已发生事件
+	eventChainQueue=eventChainQueue.filter(function(value){
+		return value !== -1;
+	});
+	eventNameChainQueue=eventNameChainQueue.filter(function(value){
+		return value !== -1;
+	});
+	for(var i=0;i<pushQueue.length;i++)//推入新事件
+		eventChainQueue.push(pushQueue[i]);
 }

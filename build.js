@@ -82,8 +82,13 @@ function specialBldResult(name)
 	switch (name)
 	{
 		case 'building4':
-			infoPopup('courseInfo4');
-			popUpdating=setInterval(popUpdate,popSpeed);//进行人口增长
+			if(gameType=='course')
+				course('building4Complete');
+			else if(gameType=='normal')
+			{
+				infoPopup('info3');
+				popUpdating=setInterval(popUpdate,popSpeed);//进行人口增长
+			}
 			break;
 		
 		default:
@@ -108,7 +113,7 @@ function bldResult(type,name)
 			document.getElementById(name.replace(/ing/g, "")).nextElementSibling.remove(),document.getElementById(name.replace(/ing/g, "")).remove();//到最大建造次数的删除建筑按钮
 		name=bld2Num[name];
 		var workerNum=0;
-		var workerName=name+'Num';
+		var workerName=workerZh[name];
 		var workerDiv=document.createElement('div');
 		workerDiv.setAttribute('id',name+'s');
 		workerDiv.style.marginBottom='10px';
@@ -158,7 +163,7 @@ function build(name)
 			bldTimer.style.marginLeft='5px';
 			bldTimer.style.color='black'
 			var h=Math.floor(buildingAttribute[name]['time']/60/60),m=Math.floor(buildingAttribute[name]['time']/60%60),s=buildingAttribute[name]['time']%60;
-			bldTimer.innerText=h+':'+m+':'+s;
+			bldTimer.innerText = `${h}:${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
 			document.getElementById('bldHouse').appendChild(bldTimer);
 		}
 	}
@@ -188,7 +193,7 @@ function build(name)
 			bldTimer.style.marginLeft='5px';
 			bldTimer.style.color='black'
 			var h=Math.floor(buildingAttribute[name]['time']/60/60),m=Math.floor(buildingAttribute[name]['time']/60%60),s=buildingAttribute[name]['time']%60;
-			bldTimer.innerText=h+':'+m+':'+s;
+			bldTimer.innerText = `${h}:${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
 			document.getElementById(name.replace(/ing/g, "")).appendChild(bldTimer);
 		}
 	}

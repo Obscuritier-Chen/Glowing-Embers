@@ -3,7 +3,7 @@ var gameType=0;//教程或是正常游玩
 var popSpeed=1000,proSpeed=2000,eventSpeed=5000;
 var popUpdating;
 var population=3,popLimit=20,popVariationEff=100;
-var production={product1Num:10,product2Num:1,product3Num:0,product4Num:0,jobless:0};
+var production={product1Num:10,product2Num:10,product3Num:0,product4Num:0,jobless:0};
 var specialResident={//特殊人口
 	researcherLv1:2,
 	researcherLv2:0,
@@ -36,6 +36,12 @@ var bld2Num={building1:'worker2',
 			 building2:'worker3'};
 var num2WkrName={building1:'worker2Num',
 			 	building2:'worker3Num'};
+var workerZh={
+	builder:'建筑工人',
+	worker1:'拾荒者',
+	worker2:'工人2',
+	worker3:'工人3'
+}
 var workersTable={// 注意此变量的一级下标worker1,worker2等等必须与worker完全相同
 	builder:{//二级下标product1Num,product2Num等等必须与production完全相同
 		product1Num:0,
@@ -44,22 +50,22 @@ var workersTable={// 注意此变量的一级下标worker1,worker2等等必须�
 		product4Num:0
 	},
 	worker1:{
-		product1Num:5,
-		product2Num:0,
+		product1Num:2,
+		product2Num:1,
 		product3Num:0,
 		product4Num:0
 	},
 	worker2:{
-		product1Num:-1,
-		product2Num:-1,
-		product3Num:2,
+		product1Num:0,
+		product2Num:0,
+		product3Num:0,
 		product4Num:0
 	},
 	worker3:{
 		product1Num:0,
-		product2Num:2,
+		product2Num:0,
 		product3Num:0,
-		product4Num:1
+		product4Num:0
 	}
 };
 var buildingAttribute={
@@ -76,7 +82,7 @@ var buildingAttribute={
 		preResearch:null,
 		builderNeed:1,
 		limit:-1,
-		time:60,
+		time:10,
 		text:'increasePopLimittestetstetstestetstest',
 		consume:null,
 		condition:0
@@ -87,14 +93,14 @@ var buildingAttribute={
 		num:0,
 		need:{
 			product1Num:0,
-			product2Num:1,
+			product2Num:0,
 			product3Num:0,
 			product4Num:0
 			},
 		preResearch:['research1'],
 		builderNeed:1,
 		limit:1,
-		time:30,
+		time:5,
 		text:'forWorker2',
 		consume:null,
 		condition:0
@@ -123,9 +129,9 @@ var buildingAttribute={
 		num:0,
 		need:{
 			product1Num:0,
-			product2Num:0,
+			product2Num:1,
 			product3Num:0,
-			product4Num:1
+			product4Num:0
 			},
 		preResearch:['research2'],
 		builderNeed:1,
@@ -148,10 +154,10 @@ var buildingAttribute={
 		preResearch:null,
 		builderNeed:0,
 		limit:1,
-		time:30,
+		time:5,
 		text:'forpopIncrement',
 		consume:{
-			product2Num:-1
+			product1Num:-1
 		},
 		condition:0
 	},
@@ -160,12 +166,12 @@ var buildingAttribute={
 		display:0,
 		num:0,
 		need:{
-			product1Num:5,
+			product1Num:0,
 			product2Num:0,
-			product3Num:0,
+			product3Num:5,
 			product4Num:0
 			},
-		preResearch:null,
+		preResearch:['research4'],
 		builderNeed:0,
 		limit:1,
 		time:30,
@@ -196,8 +202,8 @@ var popDecrementAttribute={
 }
 //------------------------------------------------------------------------
 //events
-var inevitableEvents=[];//必然事件的堆栈
-var inevitableEventsDelay=0,maxDelay=4;
+var eventChainQueue=[];
+var eventNameChainQueue=[];
 var cTypePr={//content type即天气 营地内部事件 新人事件 外部事件等
 	none:50,//没有事件也是事件
 	type1:100,
@@ -282,8 +288,137 @@ var eventsAttribute={
 		content:'the lack of product1 lead to pop decrease',
 		displayed:0,
 		fType:1,
+	},
+	chainEvent1:
+	{
+		title:'chainEvent1:',
+		content:'chainEvent1:',
+		displayed:0,
+		fType:1,
+	},
+	chainEvent1_1:
+	{
+		title:'chainEvent1_1:',
+		content:'chainEvent1_1:',
+		displayed:0,
+		fType:1,
+	},
+	chainEvent1_2:
+	{
+		title:'chainEvent1_2:',
+		content:'chainEvent1_2:',
+		displayed:0,
+		fType:1,
+	},
+	chainEvent1_1_1:
+	{
+		title:'chainEvent1_1_1:',
+		content:'chainEvent1_1_1:',
+		displayed:0,
+		fType:1,
+	},
+	chainEvent1_1_2:
+	{
+		title:'chainEvent1_1_2:',
+		content:'chainEvent1_1_2:',
+		displayed:0,
+		fType:1,
+	},
+	chainEvent1_2_1:
+	{
+		title:'chainEvent1_2_1:',
+		content:'chainEvent1_2_1:',
+		displayed:0,
+		fType:1,
+	},
+	chainEvent2:
+	{
+		title:'chainEvent2:',
+		content:'chainEvent2:',
+		displayed:0,
+		fType:1,
 	}
 };
+var eventCondition={//事件条件
+	chainEvent1:
+	{
+		preEvent:[],
+		minProduct:null,
+		preBuilding:[],
+		minWorker:null,
+		minPop:0,
+		preBuff:[]
+	},
+	chainEvent1_1:
+	{
+		preEvent:[],
+		minProduct:null,
+		preBuilding:[],
+		minWorker:null,
+		minPop:0,
+		preBuff:[]
+	},
+	chainEvent1_1_1:
+	{
+		preEvent:[],
+		minProduct:null,
+		preBuilding:[],
+		minWorker:null,
+		minPop:0,
+		preBuff:[]
+	},
+	chainEvent1_1_2:
+	{
+		preEvent:[],
+		minProduct:null,
+		preBuilding:[],
+		minWorker:null,
+		minPop:0,
+		preBuff:[]
+	},
+	chainEvent1_2:
+	{
+		preEvent:[],
+		minProduct:null,
+		preBuilding:[],
+		minWorker:null,
+		minPop:0,
+		preBuff:[]
+	},
+	chainEvent1_2_1:
+	{
+		preEvent:[],
+		minProduct:null,
+		preBuilding:[],
+		minWorker:null,
+		minPop:0,
+		preBuff:[]
+	},
+	chainEvent2:
+	{
+		preEvent:[],
+		minProduct:null,
+		preBuilding:[],
+		minWorker:null,
+		minPop:0,
+		preBuff:[]
+	}
+}
+var eventTree={//{事件链名/一级事件}_{二级事件编号}_......
+	chainEvent1:
+	{
+		chainEvent1_1:
+		{
+			chainEvent1_1_1:null,
+			chainEvent1_1_2:null
+		},
+		chainEvent1_2:
+		{
+			chainEvent1_2_1:null
+		}
+	},
+	chainEvent2:null
+}
 var seletiveEventsSeletion={
 	event3:
 	{
@@ -413,6 +548,12 @@ var infoPopupAttribute={
 		title:'alert',
 		content:'product2 is not enough'
 	},
+	info3:
+	{
+		type:'normal',
+		title:'info3',
+		content:'popIncrease begin'
+	},
 	courseInfo1:
 	{
 		type:'course',
@@ -435,7 +576,25 @@ var infoPopupAttribute={
 	{
 		type:'course',
 		title:'courseInfo4',
-		content:'popIncrease begin'
+		content:'3 people come'
+	},
+	courseInfo5:
+	{
+		type:'course',
+		title:'courseInfo5',
+		content:'外来者需要住所 建造一个房屋以增加popLimit'
+	},
+	courseInfo6:
+	{
+		type:'course',
+		title:'courseInfo6',
+		content:'给无业者分配人口以进行生产 我们需要生产食物'
+	},
+	plot1:
+	{
+		type:'course',
+		title:'the beginning',
+		content:'灾难...... 幸存者聚集在了这里'
 	}
 }
 //------------------------------------------------------------------------

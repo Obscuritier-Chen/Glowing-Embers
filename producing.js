@@ -216,8 +216,15 @@ function productionVariation()//工人或buff  序号  工人数量
 			document.getElementById(key).nextElementSibling.innerText='('+produceResult[key]+')';
 	}
 }
+function disposableFunc()
+{
+	course('buildHouse');
+	disposableFunc=function(){};
+}
 function WorkersAdd(AddorSub,name)
 {
+	if(gameType=='course')
+		disposableFunc();
 	//工人+1 +5 -1 -5的情况
 	if(AddorSub==1)
 	{

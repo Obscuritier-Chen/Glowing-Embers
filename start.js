@@ -27,17 +27,27 @@ function initialization()//加载后运行
 {
 	//document.querySelectorAll('body *').forEach(element => element.classList.add('hidden'));
 	document.getElementById('popNum').innerText=population;//初始化人口
+    //HTML初始化
     document.getElementById('researcherLv1Num').innerText=specialResident['researcherLv1'];
     document.getElementById('researcherLv2Num').innerText=specialResident['researcherLv2'];
     document.getElementById('researcherLv3Num').innerText=specialResident['researcherLv3'];
 	document.getElementById('maxPop').innerText=popLimit;
     document.getElementById('jobless').innerText=production['jobless'];
-	inevitableEventsDelay=parseInt(Math.random()*10%maxDelay);
+
+    if(eventChainQueue.length==0)//初始化链式事件队列
+    {
+        eventChainQueue=Object.values(eventTree);
+        for(var key in eventTree)
+            eventNameChainQueue.push(key);
+    }
+        
     startInterface();
 }
-function course()
+function beginningCourse()
 {
     gameType='course';
+    popLimit=5;
+    document.getElementById('maxPop').innerText=popLimit;
     document.getElementById('middle').style.display='none';
     document.getElementById('building').style.display='none';
     document.getElementById('buffs').style.display='none';
@@ -52,17 +62,47 @@ function course()
     document.getElementById('all').setAttribute('class','');
     infoPopup('courseInfo1');
     document.getElementById("courseInfo1Button").onclick=()=>{//连锁infoPopup 嵌套有点烦 但是好写
-        infoPopup('courseInfo2');
-        document.getElementById('courseInfo2Button').onclick=()=>{
+        infoPopup('plot1');
+        document.getElementById('plot1Button').onclick=()=>{
             infoPopup('courseInfo3');
             document.getElementById('courseInfo3Button').onclick=()=>{
                 document.getElementById('middle').style.display='';
                 document.getElementById('build').style.display='';
+                document.getElementById('bldHouse').style.display='none';
                 document.getElementById('worker').style.display='none';
                 document.getElementById('middleBottom').style.display='none';
             };
         };
     };
+}
+function course(courseName)
+{
+    switch (courseName)
+    {
+        case 'building4Complete':
+            infoPopup('courseInfo4')
+			population+=3;
+			production.jobless+=3;
+			document.getElementById('popNum').innerText=population;
+			document.getElementById('jobless').innerText=production.jobless;
+            document.getElementById('bldHouse').style.display='';
+            setTimeout(()=>{
+                document.getElementById('worker').style.display='';
+                infoPopup('courseInfo6');
+                setInterval(produce(),proSpeed);//定期执行production
+                document.querySelectorAll(".objectVariation").forEach(function(element) {
+                    element.style.display = '';
+                });
+                productionVariation();
+            },'3000');
+            break;
+        case 'buildHouse':
+            infoPopup('courseInfo5');
+            break;
+    
+        default:
+            break;
+    }
 }
 function newGame()
 {
@@ -90,7 +130,7 @@ function newGame()
     courseBtn.style.height='35px';
     courseBtn.onclick=()=>{
         popup.remove();
-        course();
+        beginningCourse();
     };
     courseBtn.innerText='course';
     popup.appendChild(courseBtn);
@@ -110,6 +150,7 @@ function newGame()
         //setInterval(eventsDisplay,eventSpeed);
         setInterval(produce(),proSpeed);//定期执行production
         popUpdating=setInterval(popUpdate,popSpeed);
+        gameType='normal';
     };
     skip.innerText='skip';
     popup.appendChild(skip);

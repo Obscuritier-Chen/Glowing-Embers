@@ -80,7 +80,7 @@ function research(name)
 		rsrTimer.style.marginLeft='5px';
 		rsrTimer.style.color='black'
 		var h=Math.floor(researchProject[name]['time']/60/60),m=Math.floor(researchProject[name]['time']/60%60),s=researchProject[name]['time']%60;
-		rsrTimer.innerText=h+':'+m+':'+s;
+		rsrTimer.innerText=`${h}:${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
 		document.getElementById(name).appendChild(rsrTimer);
     }
 }

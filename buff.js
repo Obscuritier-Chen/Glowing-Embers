@@ -79,7 +79,7 @@ function addBuff(name)
 			if(buffAttribute[name]['duration']!=-1)
 			{
 				var h=Math.floor(buffAttribute[name]['duration']/60),m=buffAttribute[name]['duration']%60;
-				buffDiv.innerHTML+=' <span class="timer">'+h+':'+m+':0</span>';
+				buffDiv.innerHTML+=' <span class="timer">'+h+':'+(m < 10 ? '0' + m : m)+':00</span>';
 			}
 			document.getElementById("buffs").insertBefore(buffDiv,document.getElementById("buffLast"));/*insertbefore的. 前需要是buff
 			last的上一级，假如bufflast被嵌套了*/
@@ -110,7 +110,7 @@ function addBuff(name)
 			if(buffAttribute[name]['duration']!=-1)
 			{
 				var h=Math.floor(buffAttribute[name]['duration']/60),m=buffAttribute[name]['duration']%60;
-				buffDiv.innerHTML+=' <span class="timer">'+h+':'+m+':0</span>';
+				buffDiv.innerHTML+=' <span class="timer">'+h+':'+(m < 10 ? '0' + m : m)+':00</span>';
 			}
 			document.getElementById("buffs").insertBefore(buffDiv,document.getElementById("buffLast"));/*insertbefore的. 前需要是buff
 			last的上一级，假如bufflast被嵌套了*/
@@ -141,7 +141,7 @@ function addBuff(name)
 			if(buffAttribute[name]['duration']!=-1)
 			{
 				var h=Math.floor(buffAttribute[name]['duration']/60),m=buffAttribute[name]['duration']%60;
-				buffDiv.innerHTML+=' <span class="timer">'+h+':'+m+':0</span>';
+				buffDiv.innerHTML+=' <span class="timer">'+h+':'+(m < 10 ? '0' + m : m)+':00</span>';
 			}
 			document.getElementById("buffs").insertBefore(buffDiv,document.getElementById("buffLast"));/*insertbefore的. 前需要是buff
 			last的上一级，假如bufflast被嵌套了*/
