@@ -74,6 +74,8 @@ function productMsOn(name)
 					{
 						var bld=document.createElement('div')
 						bld.innerText=key+':     '+buildingAttribute[key]['consume'][keyp];
+						if(buildingAttribute[key]['condition']==0)
+							bld.style.color='red';
 						rectangle.appendChild(bld);
 					}
 				}
@@ -322,6 +324,33 @@ function buffMsOff(name)
 {
 	if(document.getElementById(name+'Detail')!=null)
 		document.getElementById(name+'Detail').remove();
+}
+function wareMsOn(eventName,ware)
+{
+	if(document.getElementById(eventName+'_'+ware+'Detail')==null)
+	{
+		var rectangle=document.createElement('div');
+		rectangle.className='rectangle';
+		rectangle.setAttribute('id',eventName+'_'+ware+'Detail');
+		rectangle.style.whiteSpace='nowrap';
+
+		var text=document.createElement('div');
+		text.innerText='cost:';
+		rectangle.appendChild(text);
+
+		for(var key in tradeEventWare[eventName][ware].cost)
+		{
+			var cost=document.createElement('div');
+			cost.innerText=key+':'+tradeEventWare[eventName][ware].cost[key];
+			rectangle.appendChild(cost);
+		}
+		document.getElementById(eventName+'_'+ware).appendChild(rectangle);
+	}
+}
+function wareMsOff(eventName,ware)
+{
+	if(document.getElementById(eventName+'_'+ware+'Detail')!=null)
+		document.getElementById(eventName+'_'+ware+'Detail').remove();
 }
 setInterval(function(){   //所有class=timer的元素时间-1s
     var timers = document.querySelectorAll('.timer');

@@ -1,16 +1,53 @@
-﻿function performConfirmEvents(eventName)
+﻿function performEvent(eventName,btnName)//spResident稍后再做
 {
-	switch (eventName)//根据时间编号产生事件效果
+	if(btnName!=null)
+		document.getElementById(eventName).remove();
+	var result= btnName==null ? eventResult[eventName] : eventResult[eventName][btnName];//event对应的result字典
+	for(var key in eventResult[eventName].product)
+		production[key]=Math.max(production[key]+result.product[key],0);
+	for(var key in production)//刷新production显示
 	{
-		case 'event1':
-			popSub(5);
-			break;
-		case 'event2':
-			production['product1Num']+=5;
-			elementPro['product1Num'].innerText=parseInt(production['product1Num']);
-			break;
-		case 'lackProduct1':
-			addBuff('buff5');
+		if(elementPro[key]=='xzx') continue;
+		elementPro[key].innerText=parseInt(production[key]);
+	}
+	for(var key in result.buff)
+	{
+		if(result.buff[key]==-1)
+			removeBuff(key);
+		else if(result.buff[key]==0)
+			buffDisable(key);
+		else if(result.buff[key]==1)
+		{
+			if(buffAttribute[key].condition==0)
+				addBuff(key);
+			else if(buffAttribute[key].condition==1)
+				buffAble(key);
+		}
+	}
+	if(result.population>0)	
+	{
+		var tempVariation=Math.min(popLimit-population,result.population);
+		population+=tempVariation;
+		production.jobless+=tempVariation;
+		document.getElementById('popNum').innerText=population;
+		document.getElementById('jobless').innerText=production.jobless;
+	}
+	else if(result.population<0)
+		popSub(-result.population);
+	switch (eventName)
+	{
+		case 'event3':
+			switch (btnName)
+			{
+				case 'btn1':
+					console.log('btn1');
+					break;
+				case 'btn2':
+					console.log('btn2');
+					break;
+				default:
+					break;
+			}
 			break;
 		default:
 			break;
@@ -18,70 +55,22 @@
 	productionVariation();
 	proVariationMonitor();
 }
-function performSeletiveEvents(eventName,btnNum)
-{
-	switch (eventName)//根据事件 和 选择产生效果
-	{
-		case 'event3'://事件要用原本的事件号
-			switch (btnNum)
-			{
-				case 1:
-					console.log('test');//inevitableEvents.push(1);//给预备序列里添加必然事件
-					break;
-				case 2:
-					alert('12');
-					break;
-				default:
-					break;
-			}
-			break;
-		case 'event4':
-			switch (btnNum)
-			{
-				case 1:
-					alert('21');
-					break;
-				case 2:
-					alert('22');
-					break;
-				case 3:
-					alert('23');
-					break;
-				default:
-					break;
-			}
-			break;
-		default:
-			break;
-	}
-	document.getElementById(eventName).remove();//移除popup
-	productionVariation();
-	proVariationMonitor();
-}
-function performTradeEvents(eventName,btnNum,goodsNum)//大胆一点，买buff/事件
+function performTradeEvents(eventName,ware,num)//大胆一点，买buff/事件
 {
 	var tempFlag=true;
-	for(var key in goodsCost[eventName]['goods'+btnNum])//判断资源是否足够
+	for(var key in tradeEventWare[eventName][ware].cost)//判断资源是否足够
 	{
-		if(production[key]>=goodsCost[eventName]['goods'+btnNum][key]*goodsNum)
+		if(production[key]>=tradeEventWare[eventName][ware].cost[key]*num)
 			continue
 		else
 			{tempFlag=false;break;}
 	}
 	if(tempFlag)
 	{
-		for(var key in goodsCost[eventName]['goods'+btnNum])
-		{
-			production[key]-=goodsCost[eventName]['goods'+btnNum][key]*goodsNum;//扣资源
-		}
-		if(tradeEventsGoods[eventName]['goods'+btnNum+'Type']==1)
-		{
-			production[tradeEventsGoods[eventName]['goods'+btnNum]]+=goodsNum;
-		}
-		else if(tradeEventsGoods[eventName]['goods'+btnNum+'Type']==2)
-		{
-			item[tradeEventsGoods[eventName]['goods'+btnNum]]+=goodsNum;//显示先不写
-		}
+		for(var key in tradeEventWare[eventName][ware].cost)
+			production[key]-=tradeEventWare[eventName][ware].cost[key]*num;//扣资源
+		if(tradeEventWare[eventName][ware].content.type==1)//商品为product
+			production[tradeEventWare[eventName][ware].content.productName]+=num*tradeEventWare[eventName][ware].content.num;
 		for(var key in production)//刷新production显示
 		{
 			if(elementPro[key]=='xzx') continue;
@@ -179,7 +168,7 @@ function eventsDisplay(eventName)
 		//产生时间编号
 		if(eventsAttribute[eventName]['fType']==1)
 		{
-			performConfirmEvents(eventName);//confirm事件 的效果
+			performEvent(eventName,null);//实现事件效果
 			var popup = document.createElement('div');
 			popup.className='eventPopup';
 			popup.id=eventName;
@@ -264,7 +253,7 @@ function eventsDisplay(eventName)
 			contentDiv.style.maxWidth = 'calc(100% - 100px)';//距离右边界n px时换行,n=-50时达到右边界，
 			popup.appendChild(contentDiv);//将此文本加入到popup中
 			//------------------------------------分割线----------------------------------------
-			var buttonCount = seletiveEventsSeletion[eventName]['num']; // 按钮数量
+			//var buttonCount = Object.keys(eventsAttribute[eventName].button).length; // 按钮数量
 			// 创建按钮容器
 			var buttonContainer = document.createElement('div');
 			buttonContainer.style.position = 'absolute';
@@ -274,16 +263,16 @@ function eventsDisplay(eventName)
 			buttonContainer.style.textAlign = 'center';
 
 			// 创建按钮
-			for (var i=1;i<=buttonCount;i++)
+			for (var key in eventsAttribute[eventName].button)
 			{
 				var button = document.createElement('button');
-				button.innerText = seletiveEventsSeletion[eventName]['btn'+i];
+				button.innerText = eventsAttribute[eventName].button[key];
 				button.style.height = '25px';
 				button.style.marginTop='5px';
 				button.style.background = 'none';
 				button.style.border = '1px solid black';
 				button.style.width = '280px';
-				button.setAttribute('onclick',`performSeletiveEvents('${eventName}',${i})`);//设置按钮触发后的效果
+				button.setAttribute('onclick',`performEvent('${eventName}','${key}')`);//用不了.onclick 似乎会不同的button共用一个function
 				buttonContainer.appendChild(button);
 				buttonContainer.appendChild(document.createElement('br'));
 			}
@@ -336,57 +325,54 @@ function eventsDisplay(eventName)
 			popup.appendChild(contentDiv);//将此文本加入到popup中
 			//------------------------------------分割线----------------------------------------
 			// 创建按钮容器
-			var buttonCount = tradeEventsGoods[eventName]['num'];//交易数
 			var tradement=document.createElement('div');//交易的容器
 			tradement.style.position='absolute';
 			tradement.style.marginTop = '30px';
-			tradement.style.marginBottom='30px';
 			tradement.style.left = '50px';
 			tradement.style.right = '0';
-			for (var i=1;i<=buttonCount;i++)
+			for (var key in tradeEventWare[eventName])
 			{
 				var buttonContainer = document.createElement('div');//每个交易的容器
 				buttonContainer.style.position = 'relative';
 				buttonContainer.style.left = '0';
 				buttonContainer.style.right = '0';
+				buttonContainer.style.marginBottom='5px';
 				//------------------------------------------------------------------------
-				var goods=document.createElement('span')
-				goods.innerText=tradeEventsGoods[eventName]['goods'+i+'Content']+':';
+				var ware=document.createElement('span');//商品
 
-				buttonContainer.appendChild(goods);
+				var wareName=document.createElement('span');
+				wareName.id=eventName+'_'+key;
+				wareName.innerText=tradeEventWare[eventName][key].name+':';
+				wareName.style.padding='7px';
+				wareName.setAttribute('onmouseover',`wareMsOn('${eventName}','${key}')`);//鼠标移上显示cost
+				wareName.setAttribute('onmouseout',`wareMsOff('${eventName}','${key}')`);
+				ware.appendChild(wareName);
+
+				buttonContainer.appendChild(ware);
 				var button1 = document.createElement('button');//1个
-				button1.innerText = 'x1';
-				button1.style.height = '30px';
-				button1.style.width='30px';
-				button1.style.marginLeft='20px';
-				button1.style.marginTop='10px';
+				button1.innerText = '购买1个';
+				button1.style.padding='5px';
+				button1.style.marginLeft='10px';
 				button1.style.background = 'none';
-				button1.style.border = 'none';
-				button1.style.fontSize='18px';
+				button1.style.border = '1px solid black';
 				//button1.onclick=`performTradeEvents(${eventName},${i},'1')`;
-				button1.setAttribute('onclick',`performTradeEvents('${eventName}','${i}',1)`);//设置按钮触发后的效果
+				button1.setAttribute('onclick',`performTradeEvents('${eventName}','${key}',1)`);//设置按钮触发后的效果
 				buttonContainer.appendChild(button1);
 				var button5 = document.createElement('button');//5个
-				button5.innerText = 'x5';
-				button5.style.height = '30px';
-				button5.style.width='30px';
-				button5.style.marginLeft='20px';
-				button5.style.marginTop='10px';
+				button5.innerText = '购买5个';
+				button5.style.padding='5px';
+				button5.style.marginLeft='10px';
 				button5.style.background = 'none';
-				button5.style.border = 'none';
-				button5.style.fontSize='18px';
-				button5.setAttribute('onclick',`performTradeEvents('${eventName}','${i}',5)`);
+				button5.style.border = '1px solid black';
+				button5.setAttribute('onclick',`performTradeEvents('${eventName}','${key}',5)`);
 				buttonContainer.appendChild(button5);
 				var button10 = document.createElement('button');//10个
-				button10.innerText = 'x10';
-				button10.style.height = '30px';
-				button10.style.width='30px';
-				button10.style.marginLeft='20px';
-				button10.style.marginTop='10px';
+				button10.innerText = '购买10个';
+				button10.style.padding='5px';
+				button10.style.marginLeft='10px';
 				button10.style.background = 'none';
-				button10.style.border = 'none';
-				button10.style.fontSize='18px';
-				button10.setAttribute('onclick',`performTradeEvents('${eventName}','${i}',10)`);
+				button10.style.border = '1px solid black';
+				button10.setAttribute('onclick',`performTradeEvents('${eventName}','${key}',10)`);
 				buttonContainer.appendChild(button10);
 				tradement.appendChild(buttonContainer);
 			}

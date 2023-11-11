@@ -1,0 +1,210 @@
+.hidden
+{
+ 	display: none;
+}
+.btnSubClass, .btnAddClass
+{/*干掉按钮边框，按钮底色*/
+    border:none;
+    background-color:white;
+	font-size: 1.2em;
+}/*这俩没有本质区别,找时间合并*/
+.cross
+{
+    width: 15px;
+    height: 15px;
+    margin: auto;
+    position: relative;
+    margin-left: 32px;
+}
+.cross::before,
+.cross::after
+{
+    content: "";
+    position: absolute;
+    height: 18px;
+    width: 2px;
+    top: 0px;
+    right: 8px;
+    background: black;
+}
+.cross::before
+{
+    transform: rotate(45deg);
+}
+.cross::after
+{
+    transform: rotate(-45deg);
+}
+.add
+{
+    width: 15px;
+    height: 15px;
+    margin: auto;
+    position: relative;
+    margin-left: 10px;
+}
+.add::before,
+.add::after
+{
+    content: "";
+    position: absolute;
+    height: 10px;
+    width: 2px;
+    top: 6px;
+    right: 3px;
+    background-color: black;
+}
+.add::before
+{
+    transform: rotate(0deg);
+}
+.add::after
+{
+    transform: rotate(-90deg);
+}
+.bigAdd
+{
+    width: 15px;
+    height: 15px;
+    margin: auto;
+    position: relative;
+    margin-left: 10px;
+}
+.bigAdd::before,
+.bigAdd::after
+{
+    content: "";
+    position: absolute;
+    height: 16px;
+    width: 2.5px;
+    top: 3px;
+    right: 3px;
+    background-color: black;
+}
+.bigAdd::before
+{
+	transform: rotate(0deg);
+}
+.bigAdd::after
+{
+	transform: rotate(-90deg);
+}
+.sub
+{
+	width: 15px;
+	height: 15px;
+	margin: auto;
+	position: relative;
+	margin-left: 10px;
+}
+.sub::before,
+.sub::after
+{
+	content: "";
+	position: absolute;
+	height: 10px;
+	width: 2px;
+	top: 6px;
+	right: 4px;
+	background: black;
+}
+.sub::before
+{
+	transform: rotate(-90deg);
+}
+.sub::after
+{
+	transform: rotate(-90deg);
+}/*垃圾CSS,但能用就行*/
+.bigSub
+{
+	width: 15px;
+	height: 15px;
+	margin: auto;
+	position: relative;
+	margin-left: 10px;
+}
+.bigSub::before,
+.bigSub::after
+{
+	content: "";
+	position: absolute;
+    height: 16px;
+    width: 2.5px;
+	top: 3px;
+	right: 4px;
+	background: black;
+}
+.bigSub::before
+{
+	transform: rotate(-90deg);
+}
+.bigSub::after
+{
+	transform: rotate(-90deg);
+}/*垃圾CSS,但能用就行*/
+.objectNum
+{
+	float: right;
+}
+.objectVariation
+{
+	color: darkgray;
+	font-size: 80%;
+}
+.rectangle
+{
+	position: absolute;
+	margin-top: 20px;
+	min-width: '1px';
+	left:28px;
+	/*top: 100%;*/
+	background-color: black;
+	color: white; /* 字体颜色为白色 */
+	display: flex;
+	display: inline-block;
+	padding: 5px;
+	z-index: 999;/*覆盖优先级*/
+}
+.normalButton
+{
+	position: relative;
+	color:black;
+	min-width: 120px;
+	height: 35px;
+	margin-bottom: 10px;
+	margin-right: 10px;
+	border: 1px solid black;
+	background: none;
+	text-align: left;
+	font-size: 1.07em;
+	display: inline-block;/*保证当按钮内元素增多时 宽度变大*/
+	/*white-space: nowrap;*/
+}
+.columnTitle
+{
+	position:absolute; 
+	top:-12px; font-size: 17px; 
+	background: white;
+}
+.border
+{
+	position:relative;
+	border:2px solid black;
+	min-width:220px;
+	padding:10px 10px;
+	padding-top:8px;
+	padding-bottom: 5px;
+	margin-bottom:20px;
+}
+.eventPopup
+{
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background-color: white;
+	padding: 200px;
+	border: 1px solid black;
+	z-index: 100;
+}

@@ -3,7 +3,7 @@ var gameType=0;//教程或是正常游玩
 var popSpeed=1000,proSpeed=2000,eventSpeed=5000;
 var popUpdating;
 var population=3,popLimit=20,popVariationEff=100;
-var production={product1Num:10,product2Num:10,product3Num:0,product4Num:0,jobless:0};
+var production={product1Num:1000,product2Num:10,product3Num:0,product4Num:0,jobless:0};
 var specialResident={//特殊人口
 	researcherLv1:2,
 	researcherLv2:0,
@@ -11,7 +11,6 @@ var specialResident={//特殊人口
 }
 var proDisplay={product1Num:1,product2Num:1,product3Num:0,product4Num:0};
 var popNeed={product1Num:-0.1,product2Num:0,product3Num:0,product4Num:0};
-var item={item1Num:0,item2Num:0};//物品
 var elementBtnAdd={worker1:document.getElementById('btn1ProAdd'),
 				   worker2:'xzx',
 				   worker3:'xzx'};
@@ -243,6 +242,11 @@ var eventsAttribute={
         title:'event3',
         content:'test3',
         fType:2,
+		button:
+		{
+			btn1:'button1',
+			btn2:'button2'
+		},
 		cType:'type2',
 		probability:100,
 		available:1,
@@ -254,6 +258,12 @@ var eventsAttribute={
         title:'event4',
         content:'test4',
         fType:2,
+		button:
+		{
+			btn1:'button1',
+			btn2:'button2',
+			btn3:'button3'
+		},
 		cType:'type2',
 		probability:100,
 		available:1,
@@ -339,6 +349,129 @@ var eventsAttribute={
 		fType:1,
 	}
 };
+var eventResult={//fType=1/2的时间结果储存在这里
+	event1:
+	{
+		product:
+		{
+			product1Num:-5
+		},
+		buff:{},//-1删除buff 0disable buff 1创建/able buff
+		population:0,
+		spResident:{}
+	},
+	event2:
+	{
+		product:{},
+		buff:{},
+		population:-10,
+		spResident:{}
+	},
+	event3:
+	{
+		btn1:
+		{
+			product:{},
+			buff:{},
+			population:0,
+			spResident:{}
+		},
+		btn2:
+		{
+			product:{},
+			buff:{},
+			population:0,
+			spResident:{}
+		}
+	},
+	event4:
+	{
+		btn1:
+		{
+			product:{},
+			buff:{},
+			population:0,
+			spResident:{}
+		},
+		btn2:
+		{
+			product:{},
+			buff:{},
+			population:0,
+			spResident:{}
+		},
+		btn3:
+		{
+			product:{},
+			buff:{},
+			population:0,
+			spResident:{}
+		},
+	},
+	event6:
+	{
+		product:{},
+		buff:{},
+		population:0,
+		spResident:{}
+	},
+	lackProduct1:
+	{
+		product:{},
+		buff:{},
+		population:0,
+		spResident:{}
+	},
+	chainEvent1:
+	{
+		product:{},
+		buff:{},
+		population:0,
+		spResident:{}
+	},
+	chainEvent1_1:
+	{
+		product:{},
+		buff:{},
+		population:0,
+		spResident:{}
+	},
+	chainEvent1_1_1:
+	{
+		product:{},
+		buff:{},
+		population:0,
+		spResident:{}
+	},
+	chainEvent1_1_2:
+	{
+		product:{},
+		buff:{},
+		population:0,
+		spResident:{}
+	},
+	chainEvent1_2:
+	{
+		product:{},
+		buff:{},
+		population:0,
+		spResident:{}
+	},
+	chainEvent1_2_1:
+	{
+		product:{},
+		buff:{},
+		population:0,
+		spResident:{}
+	},
+	chainEvent2:
+	{
+		product:{},
+		buff:{},
+		population:0,
+		spResident:{}
+	}
+}
 var eventCondition={//事件条件
 	chainEvent1:
 	{
@@ -419,34 +552,36 @@ var eventTree={//{事件链名/一级事件}_{二级事件编号}_......
 	},
 	chainEvent2:null
 }
-var seletiveEventsSeletion={
-	event3:
-	{
-		num:2,
-		btn1:'btn1',
-		btn2:'btn2'
-	},
-	event4:
-	{
-		num:3,
-		btn1:'btn1',
-		btn2:'btn2',
-		btn3:'btn3'
-	}
-}
-var tradeEventsGoods={
+var tradeEventWare={
 	event5:
 	{
-		num:3,
-		goods1Content:'goods1',
-		goods1Type:1,
-		goods1:'product1Num',
-		goods2Content:'goods2',
-		goods2Type:2,
-		goods2:'item1Num',
-		goods3Content:'goods3',
-		goods3Type:1,
-		goods3:'product3Num'
+		ware1:
+		{
+			name:'商品1',
+			content:
+			{
+				type:1,
+				productName:'product1Num',
+				num:10
+			},
+			cost:
+			{
+				product1Num:1,
+				product2Num:1
+			}
+		},
+		ware2:
+		{
+			name:'商品2',
+			content:{},
+			cost:{}
+		},
+		ware3:
+		{
+			name:'商品3',
+			content:{},
+			cost:{}
+		}
 	}
 }
 var goodsCost={//目前的交易只能消耗产品 未来可以给消耗品一个标记/使用if来判断消耗的是什么
@@ -677,3 +812,12 @@ var freeResearcher={
 	researcherLv3:1
 }
 var researchDisplayQueue=[];
+//------------------------------------------------------------------------
+//item
+var itemAttribute={
+	item1:
+	{
+		name:'物品1',
+		num:0
+	}
+}

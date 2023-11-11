@@ -43,6 +43,21 @@ function proVariationMonitor()
 }
 function produce()
 {
+	for(const keyw in workersTable)//遍历table的worker
+	{
+		for(var i=1;i<=worker[keyw];i++)//按每个worker判定是否资源足够
+		{
+			var enoughProJudge=true;
+			for(const keyp in workersTable[keyw])//遍历所有种资源判断是否足够
+			{
+				if(production[keyp]+workersTable[keyw][keyp]<0)
+					{enoughProJudge=false;actualWrkNum[keyw]=i-1;break;}
+			}
+			if(enoughProJudge)
+				for(const keyp in workersTable[keyw])
+					actualWrkNum[keyw]=worker[keyw],production[keyp]+=workersTable[keyw][keyp]*workerEfficient[keyw]/100;
+		}
+	}//当初始worker!=0时可能会有bug?
 	for(var key in popNeed)
 	{
 		production[key]+=population*popNeed[key];//计算人口需求
@@ -69,21 +84,6 @@ function produce()
 				buildingStopResult(key),buildingAttribute[key]['condition']=0;
 		}
 	}
-	for(const keyw in workersTable)//遍历table的worker
-	{
-		for(var i=1;i<=worker[keyw];i++)//按每个worker判定是否资源足够
-		{
-			var enoughProJudge=true;
-			for(const keyp in workersTable[keyw])//遍历所有种资源判断是否足够
-			{
-				if(production[keyp]+workersTable[keyw][keyp]<0)
-					{enoughProJudge=false;actualWrkNum[keyw]=i-1;break;}
-			}
-			if(enoughProJudge)
-				for(const keyp in workersTable[keyw])
-					actualWrkNum[keyw]=worker[keyw],production[keyp]+=workersTable[keyw][keyp]*workerEfficient[keyw]/100;
-		}
-	}//当初始worker!=0时可能会有bug?
 	for(var key in production)//同时遍历production
 	{
 		if(elementPro[key]=='xzx') continue;

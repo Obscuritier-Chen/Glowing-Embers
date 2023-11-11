@@ -42,6 +42,8 @@ function buffAble(name)
 }
 function removeBuff(name)
 {
+	if(buffAttribute[name].condition==0)
+		return;
 	buffAttribute[name]['condition']=0;
 	buffAttribute[name]['working']=0;
 	if(buffAttribute[name]['type']=='event')
@@ -61,6 +63,8 @@ function removeBuff(name)
 }
 function addBuff(name)
 {
+	if(buffAttribute[name].condition==1)//如果buff已经存在
+		return;
 	if(buffAttribute[name]['type']=='event')
 	{
 		if(buffAttribute[name]['condition']==0)//.replace(/^\w/, c => c.toUpperCase())是首字母大写
