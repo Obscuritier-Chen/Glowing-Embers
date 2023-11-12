@@ -818,6 +818,21 @@ var itemAttribute={
 	item1:
 	{
 		name:'物品1',
-		num:0
+		num:0,
+		need:
+		{
+			product1Num:20
+		},
+		time:5
+	},
+	item2:
+	{
+		name:'物品2',
+		num:0,
+		need:
+		{
+			product1Num:10
+		},
+		time:-1
 	}
 }

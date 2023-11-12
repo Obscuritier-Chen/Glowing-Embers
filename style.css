@@ -1,3 +1,10 @@
+body/*双击或拖动文本不会将其标蓝*/
+{
+    -webkit-user-select:none; 
+    -moz-user-select:none; 
+    -ms-user-select:none; 
+    user-select:none;
+}
 .hidden
 {
  	display: none;

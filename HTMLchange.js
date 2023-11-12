@@ -464,3 +464,25 @@ setInterval(function(){
 		timer.textContent = hours + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds);
     }
   }, 1000);
+setInterval(function(){
+    var timers = document.querySelectorAll('.craftTimer');
+    for (var i = 0; i < timers.length; i++)
+	{
+    	var timer = timers[i];
+		var time = timer.textContent.split(':');
+		var hours = parseInt(time[0], 10);
+		var minutes = parseInt(time[1], 10);
+		var seconds = parseInt(time[2], 10);
+		var totalTime=hours*60*60+minutes*60+seconds;
+		totalTime--;
+		hours=parseInt(totalTime/60/60),minutes=parseInt(totalTime/60%60),seconds=totalTime%60;
+		if(totalTime<=0)
+		{
+			hours=0,minutes=0,seconds=0;
+			timer.parentNode.removeChild(timer);
+			document.getElementById(timer.getAttribute('id').replace(/Timer/g, '')).removeAttribute('disabled');
+			itemVariation(timer.getAttribute('id').replace(/Timer/g, ''),1);
+		}
+		timer.textContent = hours + ':' + (minutes < 10 ? '0' + minutes : minutes) + ':' + (seconds < 10 ? '0' + seconds : seconds);
+    }
+  }, 1000);

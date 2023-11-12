@@ -66,6 +66,18 @@
 					<div id="buildLast"></div>
 				</span>
 			</div>
+			<div id="middleMiddle" style="margin-bottom: 30px;">
+				<div id="craft">
+					<div style="font-size: 20px; margin-bottom: 10px;">制作：</div>
+					<div id="craftList" style="display: flex; flex-wrap: wrap; width: 600px;"> <!-- flex-wrap保证内部元素超过width下一元素就会换行 每个元素142px 142*4≈600 -->
+						<div id="simpleCraft" style="margin-right: 10px;">
+							<div style="margin-bottom: 10px;">简易制造:</div>
+							<div class="normalButton" id="item1" style="display: flex; align-items: center; padding: 0px 6px; padding-bottom: 1px;" onclick="craftItem('item1')">item1</div>
+							<div class="normalButton" id="item2" style="display: flex; align-items: center; padding: 0px 6px; padding-bottom: 1px;" onclick="craftItem('item2')">item2</div>
+						</div>
+					</div>
+				</div>
+			</div>
 			<div id="middleBottom">
 				<div id="technology">
 					<div style="font-size: 20px; margin-bottom: 10px;">研究：</div>
