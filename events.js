@@ -3,13 +3,15 @@
 	if(btnName!=null)
 		document.getElementById(eventName).remove();
 	var result= btnName==null ? eventResult[eventName] : eventResult[eventName][btnName];//event对应的result字典
-	for(var key in eventResult[eventName].product)
+	for(var key in result.product)
 		production[key]=Math.max(production[key]+result.product[key],0);
 	for(var key in production)//刷新production显示
 	{
 		if(elementPro[key]=='xzx') continue;
 		elementPro[key].innerText=parseInt(production[key]);
 	}
+	for(var key in result.item)
+		itemVariation(key,result.item[key]);
 	for(var key in result.buff)
 	{
 		if(result.buff[key]==-1)
@@ -27,6 +29,7 @@
 	if(result.population>0)	
 	{
 		var tempVariation=Math.min(popLimit-population,result.population);
+		tempVariation= tempVariation>=0 ? tempVariation :0;
 		population+=tempVariation;
 		production.jobless+=tempVariation;
 		document.getElementById('popNum').innerText=population;
@@ -34,6 +37,13 @@
 	}
 	else if(result.population<0)
 		popSub(-result.population);
+	for(var key in result.spResident)
+	{
+		if(result.spResident[key]>0)
+			spResidentAdd(key,result.spResident[key]);
+		else if(result.spResident[key]<0)
+			spResidentSub(key,-result.spResident[key]);
+	}
 	switch (eventName)
 	{
 		case 'event3':
@@ -69,8 +79,18 @@ function performTradeEvents(eventName,ware,num)//大胆一点，买buff/事件
 	{
 		for(var key in tradeEventWare[eventName][ware].cost)
 			production[key]-=tradeEventWare[eventName][ware].cost[key]*num;//扣资源
-		if(tradeEventWare[eventName][ware].content.type==1)//商品为product
-			production[tradeEventWare[eventName][ware].content.productName]+=num*tradeEventWare[eventName][ware].content.num;
+		switch (tradeEventWare[eventName][ware].content.type)
+		{
+			case 1:
+				production[tradeEventWare[eventName][ware].content.productName]+=num*tradeEventWare[eventName][ware].content.num;//虽然num*num很怪 但是一次买一个product更怪(
+				break;
+			case 2:
+				itemVariation(tradeEventWare[eventName][ware].content.itemName , num*tradeEventWare[eventName][ware].content.num);
+				break;
+			default:
+				break;
+		}
+			
 		for(var key in production)//刷新production显示
 		{
 			if(elementPro[key]=='xzx') continue;
@@ -114,11 +134,7 @@ function hideEvent(eventName)
 
 		var hideEventButton=document.createElement('div');//隐藏的事件
 		hideEventButton.innerText=eventName;
-		hideEventButton.style.width='fit-content';//与innerText相适应
-		hideEventButton.style.marginBottom='5px';
-		hideEventButton.style.border='1px solid black';
-		hideEventButton.style.backgroundColor='white';
-		hideEventButton.style.padding='1px 4px';
+		hideEventButton.className='hideEventButton';
 		hideEventButton.onclick=function(){
 			if(document.getElementById('hideEventContainer').childElementCount==1)//若最后一个 删除容器
 			{
@@ -137,11 +153,7 @@ function hideEvent(eventName)
 	{
 		var hideEventButton=document.createElement('div');//隐藏的事件
 		hideEventButton.innerText=eventName;
-		hideEventButton.style.width='fit-content';//与innerText相适应
-		hideEventButton.style.marginBottom='7px';
-		hideEventButton.style.border='1px solid black';
-		hideEventButton.style.backgroundColor='white';
-		hideEventButton.style.padding='1px 4px';
+		hideEventButton.className='hideEventButton';
 		hideEventButton.onclick=function(){
 			if(document.getElementById('hideEventContainer').childElementCount==1)
 			{
@@ -175,33 +187,16 @@ function eventsDisplay(eventName)
 			// create a new div element for the text
 			var titleDiv = document.createElement('div');//标题
 			titleDiv.innerText = eventsAttribute[eventName]['title'];
-			titleDiv.style.position = 'absolute';
-			titleDiv.style.top = '10px';
-			//titleDiv.style.left = '50px';
-			titleDiv.style.fontSize = '22px';//字体大小
-			titleDiv.style.left = '0';
-			titleDiv.style.right = '0';
-			titleDiv.style.textAlign = 'center';
-			//titleDiv.style.wordWrap = 'break-word';//自动换行
-			//titleDiv.style.maxWidth = 'calc(100% - 90px)';//难不成你个标题还换行？
+			titleDiv.className='eventTitle'
 			popup.appendChild(titleDiv);//将此文本加入到popup中
 			//------------------------------------分割线----------------------------------------
 			var contentDiv = document.createElement('div');//内容
 			contentDiv.innerText = eventsAttribute[eventName]['content'];
-			contentDiv.style.position = 'absolute';
-			contentDiv.style.top = '70px';
-			contentDiv.style.left = '50px';
-			contentDiv.style.fontSize = '17px';//字体大小
-			contentDiv.style.wordWrap = 'break-word';//自动换行
-			contentDiv.style.maxWidth = 'calc(100% - 100px)';//距离右边界n px时换行,n=-50时达到右边界，
+			contentDiv.className='eventContent';
 			popup.appendChild(contentDiv);//将此文本加入到popup中
 			//------------------------------------分割线----------------------------------------
 			var confirmButton = document.createElement('button');
-			confirmButton.style.position = 'absolute';
-			confirmButton.style.bottom = '20px';
-			confirmButton.style.right = '20px';
-			confirmButton.style.background = 'none'; // 删除按钮背景
-			confirmButton.style.fontSize = '1.5em';
+			confirmButton.className='eventConfirmButton';
 			confirmButton.innerText = "confirm";
 			confirmButton.addEventListener('click', function() {
 				popup.remove(); // 点击关闭按钮时移除popup
@@ -209,19 +204,12 @@ function eventsDisplay(eventName)
 			popup.appendChild(confirmButton);
 			//------------------------------------分割线----------------------------------------
 			var container=document.createElement('div');
-			container.style.position = 'absolute';
-			container.style.top = '15px';
-			container.style.right = '10px';
-			container.style.height='30px';
-			container.style.width='30px';
+			container.className='hdBtnContainer';
 			container.onclick=function(){hideEvent(eventName);}
 			popup.appendChild(container);
 
 			var hideButton=document.createElement('div');
-			hideButton.style.height='2.5px';
-			hideButton.style.width='27px';
-			hideButton.style.marginTop='15px';
-			hideButton.style.backgroundColor='black';
+			hideButton.className='hideButton';
 			container.appendChild(hideButton);
 			// 将popup添加到body中
 			document.body.appendChild(popup);
@@ -234,44 +222,25 @@ function eventsDisplay(eventName)
 			// create a new div element for the text
 			var titleDiv = document.createElement('div');//标题
 			titleDiv.innerText = eventsAttribute[eventName]['title'];
-			titleDiv.style.position = 'absolute';
-			titleDiv.style.top = '10px';
-			//titleDiv.style.left = '50px';
-			titleDiv.style.fontSize = '22px';//字体大小
-			titleDiv.style.left = '0';
-			titleDiv.style.right = '0';
-			titleDiv.style.textAlign = 'center';
+			titleDiv.className='eventTitle';
 			popup.appendChild(titleDiv);//将此文本加入到popup中
 			//------------------------------------分割线----------------------------------------
 			var contentDiv = document.createElement('div');//内容
 			contentDiv.innerText = eventsAttribute[eventName]['content'];
-			contentDiv.style.position = 'absolute';
-			contentDiv.style.top = '70px';
-			contentDiv.style.left = '50px';
-			contentDiv.style.fontSize = '17px';//字体大小
-			contentDiv.style.wordWrap = 'break-word';//自动换行
-			contentDiv.style.maxWidth = 'calc(100% - 100px)';//距离右边界n px时换行,n=-50时达到右边界，
+			contentDiv.className='eventContent';
 			popup.appendChild(contentDiv);//将此文本加入到popup中
 			//------------------------------------分割线----------------------------------------
 			//var buttonCount = Object.keys(eventsAttribute[eventName].button).length; // 按钮数量
 			// 创建按钮容器
 			var buttonContainer = document.createElement('div');
-			buttonContainer.style.position = 'absolute';
-			buttonContainer.style.bottom = '10px';
-			buttonContainer.style.left = '0';
-			buttonContainer.style.right = '0';
-			buttonContainer.style.textAlign = 'center';
+			buttonContainer.className='selectiveBtnContainer';
 
 			// 创建按钮
 			for (var key in eventsAttribute[eventName].button)
 			{
 				var button = document.createElement('button');
 				button.innerText = eventsAttribute[eventName].button[key];
-				button.style.height = '25px';
-				button.style.marginTop='5px';
-				button.style.background = 'none';
-				button.style.border = '1px solid black';
-				button.style.width = '280px';
+				button.className='selectiveEventButton';
 				button.setAttribute('onclick',`performEvent('${eventName}','${key}')`);//用不了.onclick 似乎会不同的button共用一个function
 				buttonContainer.appendChild(button);
 				buttonContainer.appendChild(document.createElement('br'));
@@ -280,19 +249,12 @@ function eventsDisplay(eventName)
 			popup.appendChild(buttonContainer);
 
 			var container=document.createElement('div');
-			container.style.position = 'absolute';
-			container.style.top = '15px';
-			container.style.right = '10px';
-			container.style.height='30px';
-			container.style.width='30px';
+			container.className='hdBtnContainer';
 			container.onclick=function(){hideEvent(eventName);}
 			popup.appendChild(container);
 
 			var hideButton=document.createElement('div');
-			hideButton.style.height='2.5px';
-			hideButton.style.width='27px';
-			hideButton.style.marginTop='15px';
-			hideButton.style.backgroundColor='black';
+			hideButton.className='hideButton';
 			container.appendChild(hideButton);
 
 			document.body.appendChild(popup);
@@ -305,38 +267,22 @@ function eventsDisplay(eventName)
 			// create a new div element for the text
 			var titleDiv = document.createElement('div');//标题
 			titleDiv.innerText = eventsAttribute[eventName]['title'];
-			titleDiv.style.position='absolute';
-			titleDiv.style.marginTop = '10px';
-			titleDiv.style.fontSize = '22px';//字体大小
-			titleDiv.style.top='10px';
-			titleDiv.style.left = '0';
-			titleDiv.style.right = '0';
-			titleDiv.style.textAlign = 'center';
+			titleDiv.className='eventTitle';
 			popup.appendChild(titleDiv);//将此文本加入到popup中
 			//------------------------------------分割线----------------------------------------
 			var contentDiv = document.createElement('div');//内容
 			contentDiv.innerText = eventsAttribute[eventName]['content'];
 			contentDiv.style.position='absolute';
-			contentDiv.style.left = '50px';
-			contentDiv.style.top='70px';
-			contentDiv.style.fontSize = '17px';//字体大小
-			contentDiv.style.wordWrap = 'break-word';//自动换行
-			contentDiv.style.maxWidth = 'calc(100% - 100px)';//距离右边界n px时换行,n=-50时达到右边界，
+			contentDiv.className='eventContent';
 			popup.appendChild(contentDiv);//将此文本加入到popup中
 			//------------------------------------分割线----------------------------------------
 			// 创建按钮容器
 			var tradement=document.createElement('div');//交易的容器
-			tradement.style.position='absolute';
-			tradement.style.marginTop = '30px';
-			tradement.style.left = '50px';
-			tradement.style.right = '0';
+			tradement.className='tradementContainer';
 			for (var key in tradeEventWare[eventName])
 			{
 				var buttonContainer = document.createElement('div');//每个交易的容器
-				buttonContainer.style.position = 'relative';
-				buttonContainer.style.left = '0';
-				buttonContainer.style.right = '0';
-				buttonContainer.style.marginBottom='5px';
+				buttonContainer.className='tradeEventBtnContainer';
 				//------------------------------------------------------------------------
 				var ware=document.createElement('span');//商品
 
@@ -351,39 +297,25 @@ function eventsDisplay(eventName)
 				buttonContainer.appendChild(ware);
 				var button1 = document.createElement('button');//1个
 				button1.innerText = '购买1个';
-				button1.style.padding='5px';
-				button1.style.marginLeft='10px';
-				button1.style.background = 'none';
-				button1.style.border = '1px solid black';
+				button1.className='tradeEventBtn';
 				//button1.onclick=`performTradeEvents(${eventName},${i},'1')`;
 				button1.setAttribute('onclick',`performTradeEvents('${eventName}','${key}',1)`);//设置按钮触发后的效果
 				buttonContainer.appendChild(button1);
 				var button5 = document.createElement('button');//5个
 				button5.innerText = '购买5个';
-				button5.style.padding='5px';
-				button5.style.marginLeft='10px';
-				button5.style.background = 'none';
-				button5.style.border = '1px solid black';
+				button5.className='tradeEventBtn';
 				button5.setAttribute('onclick',`performTradeEvents('${eventName}','${key}',5)`);
 				buttonContainer.appendChild(button5);
 				var button10 = document.createElement('button');//10个
 				button10.innerText = '购买10个';
-				button10.style.padding='5px';
-				button10.style.marginLeft='10px';
-				button10.style.background = 'none';
-				button10.style.border = '1px solid black';
+				button10.className='tradeEventBtn';
 				button10.setAttribute('onclick',`performTradeEvents('${eventName}','${key}',10)`);
 				buttonContainer.appendChild(button10);
 				tradement.appendChild(buttonContainer);
 			}
 			popup.appendChild(tradement);
 			var confirmButton = document.createElement('button');
-			confirmButton.style.position = 'absolute';
-			confirmButton.style.bottom = '10px';
-			confirmButton.style.right = '10px';
-			confirmButton.style.border='1px solid black';
-			confirmButton.style.background = 'none'; // 删除按钮背景
-			confirmButton.style.fontSize = '1em';
+			confirmButton.className='eventConfirmButton';
 			confirmButton.innerText = "confirm";
 			confirmButton.addEventListener('click', function() {
 				popup.remove(); // 点击关闭按钮时移除popup
@@ -391,19 +323,12 @@ function eventsDisplay(eventName)
 			popup.appendChild(confirmButton);
 
 			var container=document.createElement('div');
-			container.style.position = 'absolute';
-			container.style.top = '15px';
-			container.style.right = '10px';
-			container.style.height='30px';
-			container.style.width='30px';
+			container.className='hdBtnContainer';
 			container.onclick=function(){hideEvent(eventName);}
 			popup.appendChild(container);
 
 			var hideButton=document.createElement('div');
-			hideButton.style.height='2.5px';
-			hideButton.style.width='27px';
-			hideButton.style.marginTop='15px';
-			hideButton.style.backgroundColor='black';
+			hideButton.className='hideButton';
 			container.appendChild(hideButton);
 
 			document.body.appendChild(popup);

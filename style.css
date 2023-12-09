@@ -152,12 +152,15 @@ body/*双击或拖动文本不会将其标蓝*/
 }/*垃圾CSS,但能用就行*/
 .objectNum
 {
+	display: flex;
+	flex-direction: row;
 	float: right;
 }
 .objectVariation
 {
 	color: darkgray;
 	font-size: 80%;
+	margin-top: 2px;
 }
 .rectangle
 {
@@ -214,4 +217,151 @@ body/*双击或拖动文本不会将其标蓝*/
 	padding: 200px;
 	border: 1px solid black;
 	z-index: 100;
+}
+.popup
+{
+	border: 2px solid black;
+	background-color: white;
+	padding: 20px;
+	overflow-wrap: break-word;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+	z-index: 999;
+}
+.popupConfirmButton
+{
+	position: absolute;
+	border: 1px solid black;
+	background-color: white;
+	right: 10px;
+	bottom: 10px;
+}
+.newGamePopup
+{
+	border: 2px solid black;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+}
+.newGameButton
+{
+	border: 1px solid black;
+	background-color: white;
+	font-size: 1.07em;
+	width: 120px;
+	height: 35px;
+}
+.allotPanel
+{
+	position: absolute;
+	border: 1px solid black;
+	background-color: white;
+	font-size: 16px;
+	margin-left: 15px;
+	padding: 5px;
+	z-index: 100;
+}
+.allotPanelConfirmButton
+{
+	border: 1px solid black;
+	background-color: white;
+	padding: 2px;
+	float: right;
+	margin-top: 5px;
+}
+.craftBuilding
+{
+	width: 130px;
+	display: flex;
+	flex-direction: column;
+}
+.hideEventButton/*被隐藏的事件栏的btn*/
+{
+	width: fit-content;/*与innerText相适应*/
+	border: 1px solid black;
+	background-color: white;
+	margin-top: 5px;
+	padding: 1px 4px;
+}
+.eventTitle
+{
+	position: absolute;
+	top: 10px;
+	font-size: 22px;
+	left: 0;
+	right: 0;
+	text-align: center;
+}
+.eventContent
+{
+	position: absolute;
+	top: 70px;
+	left: 50px;
+	font-size: 17px;
+	word-wrap: break-word;
+	max-width: calc(100% -100px);/*距离右边界n px时换行,n=-50时达到右边界*/
+}
+.eventConfirmButton
+{
+	position: absolute;
+	border: 1px solid black;
+	background-color: white;
+	bottom: 15px;
+	right: 15px;
+	font-size: 1.3em;
+}
+.hdBtnContainer
+{
+	position: absolute;
+	top: 15px;
+	right: 10px;
+	height: 30px;
+	width: 30px;
+}
+.hideButton/*最小化*/
+{
+	height: 2.5px;
+	width: 27px;
+	margin-top: 15px;
+	background-color: black;
+}
+.selectiveBtnContainer
+{
+	position: absolute;
+	bottom: 10px;
+	left: 0;
+	right: 0;
+	text-align: center;
+}
+.selectiveEventButton
+{
+	height: 25px;
+	margin-top: 5px;
+	border: 1px solid black;
+	background-color: white;
+	width: 280px;
+}
+.tradementContainer
+{
+	position: absolute;
+	margin-top: 30px;
+	left: 50px;
+	right: 0;
+}
+.tradeEventBtnContainer
+{
+	position: relative;
+	left: 0;
+	right: 0;
+	margin-bottom: 5px;
+}
+.tradeEventBtn
+{
+	border: 1px solid black;
+	background-color: white;
+	padding: 5px;
+	margin-left: 10px;
 }

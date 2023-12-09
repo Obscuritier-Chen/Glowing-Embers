@@ -13,9 +13,13 @@ function newBuilding()
 						{tempFlag=false;break;}
 				}
 			}
+			for(var i=0;i<buildingAttribute[key].preBuilding.length;i++)
+			{
+				if(buildingAttribute[buildingAttribute[key].preBuilding[i]].num==0)
+					{tempFlag=false;break;}
+			}
 			if(tempFlag)//创建新building
 			{
-				document.getElementById('build').insertBefore(document.createElement('br'),document.getElementById('buildLast'));
 				buildingAttribute[key]['display']=1;
 				var building=document.createElement('button');
 				building.setAttribute('class','normalButton');
@@ -23,7 +27,7 @@ function newBuilding()
 				building.setAttribute('onclick','build(\''+key+'\')');
 				building.setAttribute('onmouseover','buildMsOn(\''+key+'\')');
 				building.setAttribute('onmouseout','buildMsOff(\''+key+'\')');
-				building.innerText=key;
+				building.innerText=buildingAttribute[key].name;
 				document.getElementById('build').insertBefore(building,document.getElementById('buildLast'));
 			}
 		}
@@ -64,7 +68,7 @@ function buildingDisplay(name)//将新的building显示到侧边栏
 		building.setAttribute('id',name);
 		building.setAttribute('onmouseover','buildingMsOn(\''+name+'\')');
 		building.setAttribute('onmouseout','buildingMsOff(\''+name+'\')');
-		building.innerText=name+'：';
+		building.innerText=buildingAttribute[name].name+':';
 		var num=document.createElement('span');
 		num.setAttribute('class','objectNum');
 		num.setAttribute('id',name+'Num');
@@ -110,7 +114,7 @@ function bldResult(type,name)
 	{
 		buildingAttribute[name]['condition']=1;
 		if(buildingAttribute[name]['num']==buildingAttribute[name]['limit'])
-			document.getElementById(name.replace(/ing/g, "")).nextElementSibling.remove(),document.getElementById(name.replace(/ing/g, "")).remove();//到最大建造次数的删除建筑按钮
+			document.getElementById(name.replace(/ing/g, "")).remove();//到最大建造次数的删除建筑按钮
 		name=bld2Num[name];
 		var workerNum=0;
 		var workerName=workerZh[name];
@@ -128,15 +132,22 @@ function bldResult(type,name)
 	{
 		buildingAttribute[name]['condition']=1;
 		if(buildingAttribute[name]['num']==buildingAttribute[name]['limit'])
-			document.getElementById(name.replace(/ing/g, "")).nextElementSibling.remove(),document.getElementById(name.replace(/ing/g, "")).remove();//到最大建造次数的删除建筑按钮
+			document.getElementById(name.replace(/ing/g, "")).remove();//到最大建造次数的删除建筑按钮
 		addBuff(buildingAttribute[name]['buffName']);
 	}
 	else if(type==4)//特别建筑类型
 	{
 		buildingAttribute[name]['condition']=1;
 		if(buildingAttribute[name]['num']==buildingAttribute[name]['limit'])
-			document.getElementById(name.replace(/ing/g, "")).nextElementSibling.remove(),document.getElementById(name.replace(/ing/g, "")).remove();//到最大建造次数的删除建筑按钮
+			document.getElementById(name.replace(/ing/g, "")).remove();//到最大建造次数的删除建筑按钮
 		specialBldResult(name);
+	}
+	else if(type==5)
+	{
+		buildingAttribute[name]['condition']=1;
+		if(buildingAttribute[name]['num']==buildingAttribute[name]['limit'])
+			document.getElementById(name.replace(/ing/g, "")).remove();//到最大建造次数的删除建筑按钮
+		newCraftBuilding(name);
 	}
 	proVariationMonitor();
 }

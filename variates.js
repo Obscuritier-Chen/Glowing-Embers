@@ -1,13 +1,24 @@
 var gameType=0;//教程或是正常游玩
+var funcCondition={//有时需要禁用函数
+	newBuilding: true
+}
 //producing
 var popSpeed=1000,proSpeed=2000,eventSpeed=5000;
 var popUpdating;
-var population=3,popLimit=20,popVariationEff=100;
+var population=3,popLimit=20,popVariationEff=100,popDecreaseEff=100;
 var production={product1Num:1000,product2Num:10,product3Num:0,product4Num:0,jobless:0};
+var productionZh={
+	product1Num:'产品1',
+	product2Num:'产品2',
+	product3Num:'产品3',
+	product4Num:'产品4',
+}
 var specialResident={//特殊人口
 	researcherLv1:2,
 	researcherLv2:0,
-	researcherLv3:1
+	researcherLv3:1,
+	warrior:0,
+	craftman:0,
 }
 var proDisplay={product1Num:1,product2Num:1,product3Num:0,product4Num:0};
 var popNeed={product1Num:-0.1,product2Num:0,product3Num:0,product4Num:0};
@@ -69,6 +80,7 @@ var workersTable={// 注意此变量的一级下标worker1,worker2等等必须�
 };
 var buildingAttribute={
 	house:{
+		name:'房屋',
 		type:1,
 		display:1,
 		num:0,
@@ -79,6 +91,7 @@ var buildingAttribute={
 			product4Num:0
 			},
 		preResearch:null,
+		preBuilding:[],
 		builderNeed:1,
 		limit:-1,
 		time:10,
@@ -87,6 +100,7 @@ var buildingAttribute={
 		condition:0
 	},
 	building1:{
+		name:'建筑1',
 		type:2,
 		display:0,
 		num:0,
@@ -96,7 +110,8 @@ var buildingAttribute={
 			product3Num:0,
 			product4Num:0
 			},
-		preResearch:['research1'],
+		preResearch:null,
+		preBuilding:['building4'],
 		builderNeed:1,
 		limit:1,
 		time:5,
@@ -105,6 +120,7 @@ var buildingAttribute={
 		condition:0
 	},
 	building2:{
+		name:'建筑2',
 		type:2,
 		display:0,
 		num:0,
@@ -115,6 +131,7 @@ var buildingAttribute={
 			product4Num:0
 			},
 		preResearch:['research2'],
+		preBuilding:[],
 		builderNeed:0,
 		limit:1,
 		time:30,
@@ -123,6 +140,7 @@ var buildingAttribute={
 		condition:0
 	},
 	building3:{
+		name:'建筑3',
 		type:2,
 		display:0,
 		num:0,
@@ -133,6 +151,7 @@ var buildingAttribute={
 			product4Num:0
 			},
 		preResearch:['research2'],
+		preBuilding:[],
 		builderNeed:1,
 		limit:1,
 		time:30,
@@ -141,6 +160,7 @@ var buildingAttribute={
 		condition:0
 	},
 	building4:{
+		name:'火堆',
 		type:4,
 		display:1,
 		num:0,
@@ -151,6 +171,7 @@ var buildingAttribute={
 			product4Num:0
 			},
 		preResearch:null,
+		preBuilding:[],
 		builderNeed:0,
 		limit:1,
 		time:5,
@@ -161,25 +182,24 @@ var buildingAttribute={
 		condition:0
 	},
 	building5:{
-		type:3,
+		name:'建筑5',
+		type:5,
 		display:0,
 		num:0,
 		need:{
 			product1Num:0,
 			product2Num:0,
-			product3Num:5,
+			product3Num:0,
 			product4Num:0
 			},
-		preResearch:['research4'],
+		preResearch:null,
+		preBuilding:[],
 		builderNeed:0,
 		limit:1,
-		time:30,
-		text:'add a buff',
-		consume:{
-			product2Num:-1
-		},
+		time:5,
+		text:'craftBuildingTest',
+		consume:null,
 		condition:0,
-		buffName:'buff3'
 	}
 }
 var popDecrementAttribute={
@@ -352,26 +372,31 @@ var eventsAttribute={
 var eventResult={//fType=1/2的时间结果储存在这里
 	event1:
 	{
-		product:
-		{
-			product1Num:-5
-		},
+		product:{},
+		item:{},
 		buff:{},//-1删除buff 0disable buff 1创建/able buff
 		population:0,
-		spResident:{}
+		spResident:
+		{
+			researcherLv1:1,
+			researcherLv3:-1
+		}
 	},
 	event2:
 	{
-		product:{},
+		product:
+		{
+			product1Num:10
+		},
 		buff:{},
-		population:-10,
+		population:0,
 		spResident:{}
 	},
 	event3:
 	{
 		btn1:
 		{
-			product:{},
+			product:{product1Num:10},
 			buff:{},
 			population:0,
 			spResident:{}
@@ -573,34 +598,22 @@ var tradeEventWare={
 		ware2:
 		{
 			name:'商品2',
-			content:{},
-			cost:{}
+			content:
+			{
+				type:2,
+				itemName:'item1',
+				num:1
+			},
+			cost:
+			{
+				product1Num:1
+			}
 		},
 		ware3:
 		{
 			name:'商品3',
 			content:{},
 			cost:{}
-		}
-	}
-}
-var goodsCost={//目前的交易只能消耗产品 未来可以给消耗品一个标记/使用if来判断消耗的是什么
-	event5:
-	{
-		goods1:
-		{
-			product2Num:1,
-		},
-		goods2:
-		{
-			product1Num:1,
-			product2Num:1,
-			product3Num:1
-		},
-		goods3:
-		{
-			product1Num:10,
-			product2Num:10
 		}
 	}
 }
@@ -612,6 +625,7 @@ var buffAttribute={
 	buff1:
 	{
 		type:'event',
+		name:'加成1',
 		content:'event1 pos decrease',
 		eventName:'event1',
 		effect:-100,
@@ -622,6 +636,7 @@ var buffAttribute={
 	buff2:
 	{
 		type:'event',
+		name:'加成2',
 		content:'event2 pos increase',
 		eventName:'event2',
 		effect:100,
@@ -632,6 +647,7 @@ var buffAttribute={
 	buff3:
 	{
 		type:'produce',
+		name:'加成3',
 		content:'increase wrk1 efficient',
 		workerName:'worker1',
 		effect:150,
@@ -642,6 +658,7 @@ var buffAttribute={
 	buff4:
 	{
 		type:'produce',
+		name:'加成4',
 		content:'decrease wrk3 efficient',
 		workerName:'worker3',
 		effect:-100,
@@ -652,8 +669,9 @@ var buffAttribute={
 	buff5:
 	{
 		type:'population',
+		name:'加成5',
 		content:'decrease popIncrease speed',
-		effect:-110,
+		effect:-50,
 		duration:-1,
 		condition:0,
 		working:0
@@ -661,6 +679,7 @@ var buffAttribute={
 	buff6:
 	{
 		type:'event',
+		name:'加成6',
 		content:'event2 pos increase',
 		eventName:null,
 		typeName:'type1',//cType
@@ -668,7 +687,27 @@ var buffAttribute={
 		duration:-1,
 		condition:0,
 		working:0
-	}
+	},
+	buff7:
+	{
+		type:'population',
+		name:'加成7',
+		content:'popdecrease',
+		effect:-400,
+		duration:-1,
+		condition:0,
+		working:0
+	},
+	buff8:
+	{
+		type:'population',
+		name:'加成8',
+		content:'popincrease',
+		effect:20,//>100是增加效率 <100降低效率
+		duration:-1,
+		condition:0,
+		working:0
+	},
 }
 var infoPopupAttribute={
 	info1:
@@ -725,6 +764,12 @@ var infoPopupAttribute={
 		title:'courseInfo6',
 		content:'给无业者分配人口以进行生产 我们需要生产食物'
 	},
+	courseInfo7:
+	{
+		type:'course',
+		title:'courseInfo7',
+		content:'必须生产更多木材，建造一个伐木工小屋'
+	},
 	plot1:
 	{
 		type:'course',
@@ -737,6 +782,7 @@ var infoPopupAttribute={
 var researchProject={
 	research1:
 	{
+		name:'研究1',
 		type:'science',
 		time:10,
 		pre:null,//前置
@@ -748,6 +794,7 @@ var researchProject={
 	},
 	research2:
 	{
+		name:'研究2',
 		type:'engineering',
 		time:10,
 		pre:['research1'],
@@ -762,6 +809,7 @@ var researchProject={
 	},
 	research3:
 	{
+		name:'研究3',
 		type:'sociology',
 		time:10,
 		pre:['research1'],
@@ -773,6 +821,7 @@ var researchProject={
 	},
 	research4:
 	{
+		name:'研究4',
 		type:'engineering',
 		time:1000,
 		pre:['research2','research3'],
@@ -818,7 +867,11 @@ var itemAttribute={
 	item1:
 	{
 		name:'物品1',
+		text:'物品1',
 		num:0,
+		craftBuilding:'simple',
+		craftCond:1,//condition
+		preResearch:[],
 		need:
 		{
 			product1Num:20
@@ -828,11 +881,37 @@ var itemAttribute={
 	item2:
 	{
 		name:'物品2',
+		text:'物品2',
 		num:0,
+		craftBuilding:'simple',
+		craftCond:1,
+		preResearch:[],
 		need:
 		{
 			product1Num:10
 		},
+		time:-1
+	},
+	item3:
+	{
+		name:'物品3',
+		text:'物品3',
+		num:0,
+		craftBuilding:'building5',
+		craftCond:0,
+		preResearch:[],
+		need:{},
+		time:-1
+	},
+	item4:
+	{
+		name:'物品4',
+		text:'物品4',
+		num:0,
+		craftBuilding:'building5',
+		craftCond:0,
+		preResearch:['research1'],
+		need:{},
 		time:-1
 	}
 }

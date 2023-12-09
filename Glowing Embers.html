@@ -7,18 +7,18 @@
 </head>
 <body onload="initialization()">
 	<div id="all" class="hidden">
-		<div id="right" style="position: absolute; left: 70%; top:15%; transform: translate(-70%, -15%);"><!--将html分区，这是右侧栏-->
+		<div id="right" style="position: absolute; left: 70%; top:14%; transform: translate(-70%, 0%);"><!--将html分区，这是右侧栏-->
 			<div id="production" class="border">
 				<div class="columnTitle">聚居地: </div>
 				<div>population：<div class="objectNum" style="position:relative;"><span id="popNum" >0</span>/<span id="maxPop" style="float:right"></span></div></div>
 				<div>jobless：<div class="objectNum"><span id="jobless" ></span></div></div>
-				<div>researcher：
-					<div style="margin-left: 20px;">lv1：<div id="researcherLv1Num" class="objectNum">0</div></div>
-					<div style="margin-left: 20px;">lv2：<div id="researcherLv2Num" class="objectNum">0</div></div>
-					<div style="margin-left: 20px;">lv3：<div id="researcherLv3Num" class="objectNum">0</div></div>
+				<div id='spResident'>
+					<div>researcherLv1: <div id="researcherLv1Num" class="objectNum">0</div></div>
+					<div>researcherLv2: <div id="researcherLv2Num" class="objectNum">0</div></div>
+					<div>researcherLv3: <div id="researcherLv3Num" class="objectNum">0</div></div> 
 				</div>
-				<div id="product1" onmouseover="productMsOn('product1')" onmouseout="productMsOff('product1')">product1：<div class="objectNum"><span id="product1Num"></span><span class="objectVariation">(0)</span></div></div>
-				<div id="product2" onmouseover="productMsOn('product2')" onmouseout="productMsOff('product2')">product2：<div class="objectNum"><span id="product2Num"></span><span class="objectVariation">(0)</span></div></div>
+				<div id="product1" onmouseover="productMsOn('product1')" onmouseout="productMsOff('product1')">产品1：<div class="objectNum"><div id="product1Num"></div><div class="objectVariation">(0)</div></div></div>
+				<div id="product2" onmouseover="productMsOn('product2')" onmouseout="productMsOff('product2')">产品2：<div class="objectNum"><span id="product2Num"></span><span class="objectVariation">(0)</span></div></div>
 				<div id="productLast"></div>
 			</div>
 			<div id="building" class="border">
@@ -34,9 +34,9 @@
 				
 			</div>
 		</div>
-		<div id="middle" style="position: absolute; left: 25%; top:15%; transform: translate(-25%, -15%);">
+		<div id="middle" style="position: absolute; left: 25%; top:9%; transform: translate(-25%, 0%);">
 			<div id="middleTop" style="display: flex; flex-direction: row; margin-bottom: 30px;">
-				<span id="worker" style="margin-right: 60px;">
+				<div id="worker" style="margin-right: 60px;">
 					<div style="font-size: 20px;">生产：</div>
 					<div id="workerInfo" style="float: right; font-size: 12px;"><span style="margin-right: 11px;">-5</span><span style="margin-right: 26px;">-1</span><span style="margin-right: 6px;">+1</span><span style="margin-right: 2px;">+5</span></div>
 					<br>
@@ -57,23 +57,22 @@
 						</span>
 					</div>
 					<div id="workerLast"></div>
-				</span>
-				<span id="build">
+				</div>
+				<div id="build" style="display: flex; flex-direction: column;">
 					<div style="font-size: 20px; margin-bottom: 10px;">建造：</div>
-					<button class="normalButton" id="build4" onclick="build('building4')" onmouseover="buildMsOn('building4')" onmouseout="buildMsOff('building4')">building4</button>
-					<br>
-					<button class="normalButton" id="bldHouse" onclick="build('house')" onmouseover="buildMsOn('house')" onmouseout="buildMsOff('house')">buildhouse</button>
+					<button class="normalButton" id="build4" onclick="build('building4')" onmouseover="buildMsOn('building4')" onmouseout="buildMsOff('building4')">火堆</button>
+					<button class="normalButton" id="bldHouse" onclick="build('house')" onmouseover="buildMsOn('house')" onmouseout="buildMsOff('house')">房屋</button>
 					<div id="buildLast"></div>
-				</span>
+				</div>
 			</div>
 			<div id="middleMiddle" style="margin-bottom: 30px;">
 				<div id="craft">
 					<div style="font-size: 20px; margin-bottom: 10px;">制作：</div>
-					<div id="craftList" style="display: flex; flex-wrap: wrap; width: 600px;"> <!-- flex-wrap保证内部元素超过width下一元素就会换行 每个元素142px 142*4≈600 -->
-						<div id="simpleCraft" style="margin-right: 10px;">
-							<div style="margin-bottom: 10px;">简易制造:</div>
-							<div class="normalButton" id="item1" style="display: flex; align-items: center; padding: 0px 6px; padding-bottom: 1px;" onclick="craftItem('item1')">item1</div>
-							<div class="normalButton" id="item2" style="display: flex; align-items: center; padding: 0px 6px; padding-bottom: 1px;" onclick="craftItem('item2')">item2</div>
+					<div id="craftList" style="display: flex; flex-wrap: wrap; width: 500px;"> <!-- flex-wrap保证内部元素超过width下一元素就会换行 每个元素106px 106*4<500 -->
+						<div id="simpleCraft" class="craftBuilding"> <!--flex-direction: column保证各元素换行-->
+							<div style="margin-bottom: 10px;">简易制造: <button onclick="craftListDisplay(event,'simpleCraft',-1)" style="border: 1px solid black; background-color: white;">隐藏</button></div>
+							<button class="normalButton" id="item1" onclick="craftItem('item1')" onmouseover="craftMsOn('item1')" onmouseout="craftMsOff('item1')">物品1</button>
+							<button class="normalButton" id="item2" onclick="craftItem('item2')" onmouseover="craftMsOn('item2')" onmouseout="craftMsOff('item2')">物品2</button>
 						</div>
 					</div>
 				</div>
@@ -83,7 +82,7 @@
 					<div style="font-size: 20px; margin-bottom: 10px;">研究：</div>
 					<div id="science" style="height: 45px;">
 						<span style="margin-right: 10px;">科技:</span>
-						<button id="research1" class="normalButton" onclick="research('research1')" onmouseover="researchMsOn('research1')" onmouseout="researchMsOff('research1')">research1</button>
+						<button id="research1" class="normalButton" onclick="research('research1')" onmouseover="researchMsOn('research1')" onmouseout="researchMsOff('research1')">研究1</button>
 						<button id="scienceAllot" style="border: 1px solid black; background-color:white; position: relative;" onclick="createAllotPanel('science')">分配</button>
 					</div>
 					<div id="engineering" style="height: 45px;">
@@ -102,6 +101,7 @@
 	<script src="./transfer.js"></script>
 	<script src="./start.js"></script>
 	<script src="./HTMLchange.js"></script>
+	<script src="./spResident.js"></script>
 	<script src="./buff.js"></script>
 	<script src="./item.js"></script>
 	<script src="./build.js"></script>

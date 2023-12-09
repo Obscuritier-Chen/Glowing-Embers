@@ -6,7 +6,7 @@ function newResearchProjectDisplay(name)
     newResearch.setAttribute('onclick',`research('${name}')`);
     newResearch.setAttribute('onmouseover',`researchMsOn('${name}')`);
     newResearch.setAttribute('onmouseout',`researchMsOff('${name}')`);
-    newResearch.innerText=name;
+    newResearch.innerText=researchProject[name].name;
     document.getElementById(researchProject[name]['type']).insertBefore(newResearch,document.getElementById(researchProject[name]['type']+'Allot'));
 }
 function newResearchProject(possibleProject)
@@ -44,7 +44,30 @@ function researchResult(name)
     window[researchProject[name]['type']+'Attribute']['condition']=0;
     document.getElementById(name).remove();
     researchProject[name]['condition']=1;
-    newBuilding();
+    newBuilding();//新建筑
+
+    var tempFlag=true;//新建筑选项
+    for(var key in itemAttribute)
+    {
+        for(var i=0;i<itemAttribute[key].preResearch.length;i++)
+            if(researchProject[itemAttribute[key].preResearch[i]].condition==0)
+                {tempFlag=false; break;}
+
+        if(tempFlag&&document.getElementById(itemAttribute[key].craftBuilding+'Craft')!=null&&itemAttribute[key].craftCond==0)
+        {
+            itemAttribute[key].craftCond=1;
+            craftButton=document.createElement('button');
+            craftButton.className='normalButton';
+            craftButton.id=key;
+            craftButton.setAttribute('onclick',`craftItem('${key}')`);
+            craftButton.setAttribute('onmouseover',`craftMsOn('${key}')`);
+            craftButton.setAttribute('onmouseout',`craftMsOff('${key}')`);
+            craftButton.innerText=itemAttribute[key].name;
+
+            document.getElementById(itemAttribute[key].craftBuilding+'Craft').appendChild(craftButton);
+        }
+    }
+
     newResearchProject(researchProject[name]['unlock']);
 }
 function research(name)
@@ -103,15 +126,9 @@ function createAllotPanel(type)
 {
     var rectangle=document.createElement('div');
     rectangle.setAttribute('id',type+'AllotPanel');
-    rectangle.style.position='absolute';
+    rectangle.className='allotPanel';
     rectangle.style.left=document.getElementById(type+'Allot').getBoundingClientRect().left+35+'px';
     rectangle.style.top=document.getElementById(type+'Allot').getBoundingClientRect().top+'px';
-    rectangle.style.backgroundColor='white';
-    rectangle.style.border='1px solid black';
-    rectangle.style.fontSize='16px';
-    rectangle.style.marginLeft='15px';
-    rectangle.style.padding='5px';
-    rectangle.style.zIndex=100;
     
     var researcherLv1=document.createElement('div');
     researcherLv1.innerText='researcherLv1';
@@ -195,11 +212,7 @@ function createAllotPanel(type)
     researcherLv3.appendChild(add);
 
     var confirmButton = document.createElement('button');
-    confirmButton.style.padding='2px';
-	confirmButton.style.background = 'none'; // 删除按钮背景
-    confirmButton.style.border='1px solid black';
-    confirmButton.style.float='right';
-    confirmButton.style.marginTop='5px';
+    confirmButton.className='allotPanelConfirmButton'
 	confirmButton.innerText = "confirm";
     confirmButton.addEventListener('click', function() {
         rectangle.remove();

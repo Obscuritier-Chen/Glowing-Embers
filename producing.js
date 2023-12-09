@@ -23,9 +23,23 @@ function proVariationMonitor()
 			product.setAttribute('id',key.replace(/Num/g, ''));
 			product.setAttribute('onmouseover','productMsOn(\''+key.replace(/Num/g,'')+'\')');
 			product.setAttribute('onmouseout','productMsOff(\''+key.replace(/Num/g,'')+'\')');
-			product.innerHTML=key.replace(/Num/g, '')+'：<div class="objectNum"><span id="'+key+'">0</span><span class="objectVariation">(0)</span></div>'
+			product.innerText=productionZh[key]+':';
+
+			var numContainer=document.createElement('div');
+			numContainer.className='objectNum';
+			product.appendChild(numContainer);
+
+			var num=document.createElement('div');
+			num.id=key;
+			num.innerText=production[key];
+			numContainer.appendChild(num);
+
+			var variation=document.createElement('div');
+			variation.className='objectVariation';
+			variation.innerText='('+produceResult[key]+')';
+			numContainer.appendChild(variation);
+
 			document.getElementById('production').insertBefore(product,document.getElementById('productLast'));
-			elementPro[key]=document.getElementById(key);
 		}
 	}
 	newBuilding();//更新可以新建的建筑
@@ -33,6 +47,7 @@ function proVariationMonitor()
 	{
 		if(document.getElementById('populationBuffBuff5')==null)
         {
+			addBuff('buff5');
             runFunction(eventsDisplay,'lackProduct1');
         }
 	}
@@ -148,30 +163,38 @@ function popIncrement(differ)//计算人口增加量
 		if(prPrefixSum[i]>=randomPr)
 			{increment=i;break;}
 	}
-	increment=parseInt(increment*popVariationEff/100);
+	//increment=parseInt(increment*popVariationEff/100);
 	return increment;
 }
+function popVariationCondCalc()
+{
+	for(var key in buffAttribute)
+		if(buffAttribute[key].type=='population'&&buffAttribute[key].working==1&&buffAttribute[key].effect<0)//存在减人口的buff
+			return false;
+	return true;
+}//cond=1时increase =-1时decrease -1可以覆盖1 1不可覆盖-1
 function popUpdate()
 {
+	var popVariationCond=popVariationCondCalc();
 	var deltapop=0;//现在人口增长速度看起来可能很怪，不必惊慌只是函数算出来增加量是0
-	if(popLimit-population>0&&popVariationEff>0)//否则有可能有奇怪的bug,直接限制比较方便
+	if(popLimit-population>0&&popVariationCond)//否则有可能有奇怪的bug,直接限制比较方便
 	{
-		deltapop=popIncrement(popLimit-population);
+		deltapop=parseInt(popIncrement(popLimit-population)*popVariationEff/100);
 		deltapop=Math.min(popLimit-population,deltapop);//保证人口数量不超过人口限制
 	}
-	else if(population>0&&popVariationEff<0)
+	else if(population>0&&(!popVariationCond))
 	{
-		deltapop=popIncrement(population);
-		deltapop=Math.max(-population,deltapop)
+		deltapop=parseInt(popIncrement(population)*popDecreaseEff/100);
+		deltapop=Math.min(population,deltapop)
 	}
-	if(deltapop>=0)
+	if(popVariationCond)
 	{
 		population+=deltapop;//计算人口量结果
 		production['jobless']+=deltapop;
 	}
-	else if(deltapop<0)
+	else if(!popVariationCond)
 	{
-		popSub(-deltapop);
+		popSub(deltapop);
 	}
 	document.getElementById('popNum').innerText=population;
 	elementPro['jobless'].innerText=production['jobless'];
@@ -216,15 +239,15 @@ function productionVariation()//工人或buff  序号  工人数量
 			document.getElementById(key).nextElementSibling.innerText='('+produceResult[key]+')';
 	}
 }
-function disposableFunc()
+function bldFirstHouseCourse()
 {
 	course('buildHouse');
-	disposableFunc=function(){};
+	bldFirstHouseCourse=function(){};
 }
 function WorkersAdd(AddorSub,name)
 {
 	if(gameType=='course')
-		disposableFunc();
+		bldFirstHouseCourse();
 	//工人+1 +5 -1 -5的情况
 	if(AddorSub==1)
 	{
@@ -249,27 +272,6 @@ function WorkersAdd(AddorSub,name)
 	worker[name]=Math.max(worker[name],0);//似乎没用
 	elementWorkNum[name].innerText=worker[name];
 }
-function researcherSub(name,num)//处理各岗位researcher的sub
-{
-	var temp=Math.min(freeResearcher[name],num);
-	freeResearcher[name]-=temp;
-	num-=temp;
-	var temp=Math.min(scienceAttribute[name],num);
-	scienceAttribute[name]-=temp;
-	num-=temp;
-	if(document.getElementById('science'+name.replace(/researcher/gi, "Researcher")+'Num')!=null)//若分配面板未关 更新其HTML
-		document.getElementById('science'+name.replace(/researcher/gi, "Researcher")+'Num').innerText=scienceAttribute[name];
-	var temp=Math.min(engineeringAttribute[name],num);
-	engineeringAttribute[name]-=temp;
-	num-=temp;
-	if(document.getElementById('engineering'+name.replace(/researcher/gi, "Researcher")+'Num')!=null)
-		document.getElementById('engineering'+name.replace(/researcher/gi, "Researcher")+'Num').innerText=engineeringAttribute[name];
-	var temp=Math.min(sociologyAttribute[name],num);
-	sociologyAttribute[name]-=temp;
-	if(document.getElementById('sociology'+name.replace(/researcher/gi, "Researcher")+'Num')!=null)
-		document.getElementById('sociology'+name.replace(/researcher/gi, "Researcher")+'Num').innerText=sociologyAttribute[name];
-	num-=temp;
-}
 function popSub(reduction)
 {
 	reduction=Math.min(population,reduction);
@@ -286,14 +288,10 @@ function popSub(reduction)
 		reduction-=temp;
 		elementWorkNum[key].innerText=worker[key];
 	}
-	for(var key in specialResident)//特殊人口优先级最低
+	if(reduction>0)
 	{
-		var temp=Math.min(specialResident[key],reduction);
-		specialResident[key]-=Math.min(specialResident[key],reduction);
-		if(key=='researcherLv1'||key=='researcherLv2'||key=='researcherLv3')
-			researcherSub(key,temp);
-		reduction-=temp;
-		document.getElementById(key+'Num').innerText=specialResident[key];
+		population+=reduction;//先加回去，为了与spResidentSub相匹配
+		spResidentSub(null,reduction);
 	}
 	productionVariation();
 }

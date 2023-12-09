@@ -6,16 +6,8 @@ function infoPopup(name)
 	{
 		var popup = document.createElement('div');
 		popup.setAttribute('id',name);
-		popup.style.width = '250px';
-		popup.style.border = '2px solid black';
-		popup.style.padding = '20px';
-		popup.style.overflowWrap = 'break-word';
-		popup.style.position = 'fixed';
-		popup.style.top = '50%';
-		popup.style.left = '50%';
-		popup.style.transform = 'translate(-50%, -50%)';
-		popup.style.zIndex= 999;
-		popup.style.backgroundColor= 'white';
+		popup.className='popup';
+		popup.style.width='250px';
 
 		var title = document.createElement('div');
 		title.style.textAlign = 'center';
@@ -32,12 +24,8 @@ function infoPopup(name)
 
 		var confirmButton = document.createElement('button');
 		confirmButton.setAttribute('id',name+'Button');
-		confirmButton.style.position = 'absolute';
-		confirmButton.style.background = 'none'; // 删除按钮背景
-		confirmButton.style.right = '10px';
-		confirmButton.style.bottom = '10px';
+		confirmButton.className='popupConfirmButton';
 		confirmButton.innerText = "confirm";
-		confirmButton.style.border = '1px solid black';  // Change the button border to 1px
 		confirmButton.addEventListener('click', function() {
 			popup.remove(); // 点击关闭按钮时移除popup
 		});
@@ -352,6 +340,43 @@ function wareMsOff(eventName,ware)
 	if(document.getElementById(eventName+'_'+ware+'Detail')!=null)
 		document.getElementById(eventName+'_'+ware+'Detail').remove();
 }
+function craftMsOn(itemName)
+{
+	if(document.getElementById('craft_'+itemName+'Detail')==null)
+	{
+		var rectangle=document.createElement('div');
+		rectangle.className='rectangle';
+		rectangle.id='craft_'+itemName+'Detail';
+		rectangle.style.whiteSpace='nowrap';
+
+		var text=document.createElement('div');
+		text.innerText=itemAttribute[itemName].text;
+		rectangle.appendChild(text);
+
+		var needContainer=document.createElement('div');
+		needContainer.innerText='need:';
+		rectangle.appendChild(needContainer);
+
+		for(var key in itemAttribute[itemName].need)
+		{
+			var need=document.createElement('div');
+			need.style.marginLeft='15px';
+			need.innerText=key+': '+itemAttribute[itemName].need[key];
+			needContainer.appendChild(need);
+		}
+
+		var time=document.createElement('div');
+		time.innerText='costTime: '+(itemAttribute[itemName].time>0? itemAttribute[itemName].time : '0')  +'s';
+		rectangle.appendChild(time);
+
+		document.getElementById(itemName).appendChild(rectangle);
+	}
+}
+function craftMsOff(itemName)
+{
+	if(document.getElementById('craft_'+itemName+'Detail')!=null)
+		document.getElementById('craft_'+itemName+'Detail').remove();
+}
 setInterval(function(){   //所有class=timer的元素时间-1s
     var timers = document.querySelectorAll('.timer');
     for (var i = 0; i < timers.length; i++)
@@ -426,12 +451,8 @@ setInterval(function(){   //所有class=timer的元素时间-1s
 				{
                     if(buildingAttribute[timer.getAttribute('id').replace(/Timer/g, '')]['type']==1)
                         bldResult(1,'house');
-					else if(buildingAttribute[timer.getAttribute('id').replace(/Timer/g, '')]['type']==2)
-						bldResult(2,timer.getAttribute('id').replace(/Timer/g, ''));
-					else if(buildingAttribute[timer.getAttribute('id').replace(/Timer/g, '')]['type']==3)
-						bldResult(3,timer.getAttribute('id').replace(/Timer/g, ''));
-					else if(buildingAttribute[timer.getAttribute('id').replace(/Timer/g, '')]['type']==4)
-						bldResult(4,timer.getAttribute('id').replace(/Timer/g, ''));
+					else if(buildingAttribute[timer.getAttribute('id').replace(/Timer/g, '')]['type']!=1)
+						bldResult(buildingAttribute[timer.getAttribute('id').replace(/Timer/g, '')]['type'],timer.getAttribute('id').replace(/Timer/g, ''));
                     workingBuilder-=buildingAttribute[timer.getAttribute('id').replace(/Timer/g, '')]['builderNeed'];
 					timer.parentNode.removeChild(timer);
 					continue;
