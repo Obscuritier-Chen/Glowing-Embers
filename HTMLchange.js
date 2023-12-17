@@ -47,9 +47,9 @@ function productMsOn(name)
         {
             var need=document.createElement('div');
             if(Number(population*popNeed[name+'Num'])!=Math.round(population*popNeed[name+'Num']))
-                need.innerText=population+'*'+'population'+':     '+(population*popNeed[name+'Num']).toFixed(1);
+                need.innerText=population+'*'+'人口'+':     '+(population*popNeed[name+'Num']).toFixed(1);
             else if(Number(population*popNeed[name+'Num'])==Math.round(population*popNeed[name+'Num']))
-                need.innerText=population+'*'+'population'+':     '+(population*popNeed[name+'Num']);
+                need.innerText=population+'*'+'人口'+':     '+(population*popNeed[name+'Num']);
             rectangle.appendChild(need);
         }
 		for(var key in buildingAttribute)//建筑消耗
@@ -61,7 +61,7 @@ function productMsOn(name)
 					if(keyp.replace(/Num/g, '')==name)
 					{
 						var bld=document.createElement('div')
-						bld.innerText=key+':     '+buildingAttribute[key]['consume'][keyp];
+						bld.innerText=buildingAttribute[key].name+':     '+buildingAttribute[key]['consume'][keyp];
 						if(buildingAttribute[key]['condition']==0)
 							bld.style.color='red';
 						rectangle.appendChild(bld);
@@ -75,27 +75,29 @@ function productMsOn(name)
             {
                 var produce=document.createElement('div');
                 if(worker[key]==actualWrkNum[key])
-                    produce.innerText=worker[key]+'*'+key+':     '+worker[key]*workersTable[key][name+'Num'];
+                    produce.innerText=worker[key]+'*'+workerZh[key]+':        '+worker[key]*workersTable[key][name+'Num'];
                 else if(worker[key]!=actualWrkNum[key])
-                    produce.innerText=actualWrkNum[key]+'('+worker[key]+')*'+key+':     '+actualWrkNum[key]*workersTable[key][name+'Num'];
+                    produce.innerText=actualWrkNum[key]+'('+worker[key]+')*'+workerZh[key]+':        '+actualWrkNum[key]*workersTable[key][name+'Num'];
                 rectangle.appendChild(produce);
+				if(workersTable[key][name+'Num']<0)//负生产无buff直接跳
+					continue;
                 for(var keyb in buffAttribute)
                 {
+					var tempCnt=0;
 					if(buffAttribute[keyb]['type']!='produce')
 						continue;
-                    //alert(produceBuffsEffect[keyb]['workerNum']+key);
-                    if(buffAttribute[keyb]['workerName']==key&&buffAttribute[keyb]['condition']==1&&workersTable[key][name+'Num']>0)
-                    {
-                        var buff=document.createElement('div');
-                        buff.style.marginLeft='15px';
-                        if(buffAttribute[keyb]['effect']<0)
-                            buff.innerText='    '+keyb+':     '+buffAttribute[keyb]['effect']+'%';
-                        else if(buffAttribute[keyb]['effect']>0)
-                            buff.innerText='    '+keyb+':     +'+buffAttribute[keyb]['effect']+'%';
-						if(buffAttribute[keyb]['working']==0)
-							buff.style.color='red';
-                        rectangle.appendChild(buff);
-                    }
+                    for(var keybw in buffAttribute[keyb].workerName)
+						if((keybw==key||keybw=='all')&&buffAttribute[keyb]['condition']==1)
+							tempCnt+=buffAttribute[keyb].workerName[keybw];
+					var buff=document.createElement('div');
+					buff.style.marginLeft='15px';
+					if(tempCnt<0)
+						buff.innerText='    '+buffAttribute[keyb].name+':     '+tempCnt+'%';
+					else if(tempCnt>0)
+						buff.innerText='    '+buffAttribute[keyb].name+':     +'+tempCnt+'%';
+					if(buffAttribute[keyb]['working']==0)
+						buff.style.color='red';
+					rectangle.appendChild(buff);
                 }
             }
         }
@@ -115,12 +117,29 @@ function workerMsOn(name)
 		var rectangle = document.createElement('div');
         rectangle.className = 'rectangle';
         rectangle.setAttribute('id',name+'Detail');
+		var content=document.createElement('div');
+		content.innerText=workerContent[name];
+		content.style.fontSize='13px';
+		rectangle.appendChild(content);
+
+		//rectangle.appendChild(document.createElement('br'))
 		for(var key in workersTable[name])
 		{
-			var proVry=document.createElement('div');
-			proVry.innerText=key+':  '+workersTable[name][key];
-			rectangle.appendChild(proVry);
+			if(workersTable[name][key]==0)
+				continue;
+			var container=document.createElement('div');
+			container.style.width='110px';
+			container.innerText=productionZh[key]+':';
+
+			var num=document.createElement('div');
+			num.style.float='right';
+			num.innerText=workersTable[name][key]
+			container.appendChild(num);
+			
+			rectangle.appendChild(container);
 		}
+		if(rectangle.childElementCount!=1)
+			content.style.marginBottom='3px';
 		document.getElementById(name+'Name').appendChild(rectangle);
 	}
 }
@@ -147,43 +166,61 @@ function buildMsOn(name)
 			document.getElementById('bldHouse').appendChild(rectangle);
 		else
 			document.getElementById(name.replace(/ing/g, "")).appendChild(rectangle);
-		var consume=document.createElement('div');
-		consume.style.whiteSpace='nowrap';
-		consume.innerText='consume:';
-		rectangle.appendChild(consume);
-		for(var key in buildingAttribute[name]['need'])
+		var need=document.createElement('div');
+		need.style.whiteSpace='nowrap';
+		if(Object.keys(buildingAttribute[name].need).length>0)
 		{
-			if(buildingAttribute[name]['need'][key]>0)
+			need.innerText='需要:';
+			rectangle.appendChild(need);
+			for(var key in buildingAttribute[name]['need'])
 			{
-				var need=document.createElement('div');
-				need.style.whiteSpace='nowrap';//禁止换行 虽然不到为啥它会换行
-				need.style.marginLeft='15px';
-				if(proDisplay[key]==0)
-					need.style.color='red';
-				if(production[key]>=buildingAttribute[name]['need'][key])
-					need.innerText=key+':  '+buildingAttribute[name]['need'][key];
-				else if(production[key]<buildingAttribute[name]['need'][key])
+				if(buildingAttribute[name]['need'][key]>0)
 				{
-					need.innerText=key+':  ';
-					var needNum=document.createElement('span');
-					need.style.color='red';
-					needNum.innerText=buildingAttribute[name]['need'][key];
-					need.appendChild(needNum);
+					var product=document.createElement('div');
+					product.style.whiteSpace='nowrap';//禁止换行 虽然不到为啥它会换行
+					product.style.marginLeft='15px';
+					product.innerText=productionZh[key]+':';
+					if(proDisplay[key]==0)
+						product.style.color='red';
+					
+					var num=document.createElement('div');
+					num.className='buildRctNum';
+					if(production[key]<buildingAttribute[name]['need'][key])
+						num.style.color='red';
+					num.innerText=buildingAttribute[name].need[key];
+					product.appendChild(num);
+
+					need.appendChild(product);
 				}
-				consume.appendChild(need);
 			}
 		}
 
-		var builder=document.createElement('div');
-		builder.style.whiteSpace='nowrap';
-		if(buildingAttribute[name]['builderNeed']>worker['builder']-workingBuilder)	
-			builder.style.color='red';
-		builder.innerText='builderNeed:  '+buildingAttribute[name]['builderNeed'];
-		rectangle.appendChild(builder);
+		if(buildingAttribute[name].builderNeed>0)
+		{
+			var builder=document.createElement('div');
+			builder.style.whiteSpace='nowrap';
+			builder.innerText='建筑工人:';
+
+			var num=document.createElement('div');
+			num.className='buildRctNum';
+			num.innerText=buildingAttribute[name].builderNeed;
+
+			if(buildingAttribute[name]['builderNeed']>worker['builder']-workingBuilder)	
+				num.style.color='red';
+			builder.appendChild(num);
+
+			rectangle.appendChild(builder);
+		}
+		
 		var time=document.createElement('div');
 		time.style.whiteSpace='nowrap';
-		time.innerText='Take time:  '+buildingAttribute[name]['time']+'s';
+		time.innerText='所需时间:';
 		rectangle.appendChild(time);
+
+		var num=document.createElement('div');
+		num.className='buildRctNum';
+		num.innerText=buildingAttribute[name].time+'s';
+		time.appendChild(num);
 	}
 }
 function buildMsOff(name)
@@ -207,12 +244,18 @@ function buildingMsOn(name)
 		if(buildingAttribute[name]['consume']!=null)
 		{
 			var consumeContainer=document.createElement('div');
-			consumeContainer.innerText='consume:';
+			consumeContainer.innerText='消耗:';
 			for(var key in buildingAttribute[name]['consume'])
 			{
 				var consume=document.createElement('div');
 				consume.style.marginLeft='15px';
-				consume.innerText=key+':  '+buildingAttribute[name]['consume'][key];
+				consume.innerText=productionZh[key]+':';
+				
+				var num=document.createElement('div');
+				num.style.float='right';
+				num.innerText=buildingAttribute[name].consume[key];
+				consume.appendChild(num);
+
 				consumeContainer.appendChild(consume);
 			}
 			rectangle.appendChild(consumeContainer);
@@ -231,6 +274,7 @@ function researchMsOn(name)
 	{
 		var rectangle=document.createElement('div');
 		rectangle.className='rectangle';
+		rectangle.style.minWidth='105px';
 		rectangle.setAttribute('id',name+'Detail');
 		rectangle.style.whiteSpace='nowrap';
 
@@ -238,21 +282,35 @@ function researchMsOn(name)
 		text.innerText=researchProject[name]['text'];
 		rectangle.appendChild(text);
 
-		var consume=document.createElement('div');
-		consume.innerText='consume:';
-		if(researchProject[name]['consume']==null)
-			consume.innerText='consume:  null';
-		for(var key in researchProject[name]['consume'])
+		if(researchProject[name].consume!=null)
 		{
-			var product=document.createElement('div');
-			product.style.marginLeft='15px';
-			product.innerText=key+':  '+researchProject[name]['consume'][key];
-			consume.appendChild(product);
-		}
-		rectangle.appendChild(consume)
+			var consume=document.createElement('div');
+			consume.style.whiteSpace='nowrap';
+			consume.innerText='需要:';
+			for(var key in researchProject[name]['consume'])
+			{
+				var product=document.createElement('div');
+				product.style.marginLeft='15px';
+				product.innerText=productionZh[key]+':';
 
+				var num=document.createElement('div');
+				num.className='buildRctNum';
+				num.innerText=researchProject[name].consume[key];
+				product.appendChild(num);
+
+				consume.appendChild(product);
+			}
+			rectangle.appendChild(consume);
+		}
 		var time=document.createElement('div');
-		time.innerText='take time:  '+researchProject[name]['time'];
+		time.style.whiteSpace='nowrap';
+		time.innerText='研究时间:';
+
+		var num=document.createElement('div');
+		num.className='buildRctNum';
+		num.innerText=researchProject[name].time;
+		time.appendChild(num);
+
 		rectangle.appendChild(time);
 
 		document.getElementById(name).appendChild(rectangle);
@@ -275,35 +333,79 @@ function buffMsOn(name)
 		if(buffAttribute[name]['working']==0)
 		{
 			var wrkCondition=document.createElement('div');
-			wrkCondition.innerText='disabled';
+			wrkCondition.innerText='失效的';
 			rectangle.appendChild(wrkCondition);
 		}
 
+		var content=document.createElement('div');
+		content.innerText=buffAttribute[name]['content'];
+		rectangle.appendChild(content);
+
 		var type=document.createElement('div');
-		type.innerText='type:  '+buffAttribute[name]['type'];
+		if(buffAttribute[name].type=='event')
+			type.innerText='类型:  事件';
+		else if(buffAttribute[name].type=='produce')
+			type.innerText='类型:  生产';
+		else if(buffAttribute[name].type=='population')
+			type.innerText='类型:  人口';
 		rectangle.appendChild(type);
 
 		var effect=document.createElement('div');
-		effect.innerText='effect:';
+		effect.innerText='效果:';
 		if(buffAttribute[name]['type']=='event')
 		{
 			var eventEffect=document.createElement('div');
 			eventEffect.style.marginLeft='15px';
-			eventEffect.innerText=buffAttribute[name]['eventName']!=null ? buffAttribute[name]['eventName'] : buffAttribute[name]['typeName']+':  '+((buffAttribute[name]['effect']>0) ? '+'+buffAttribute[name]['effect'] : buffAttribute[name]['effect'])+'%';
+			for(var key in buffAttribute[name].typeList)
+			{
+				var type=document.createElement('div');
+				type.innerText=key+'类:';
+
+				var num=document.createElement('div');
+				num.style.float='right';
+				num.innerText=(buffAttribute[name].typeList[key]>0 ? '+' : '')+buffAttribute[name].typeList[key]+'%';
+				type.appendChild(num);
+
+				eventEffect.appendChild(type);
+			}
+			for(var key in buffAttribute[name].eventList)
+			{
+				var event=document.createElement('div');
+				event.innerText=key+':';
+
+				var num=document.createElement('div');
+				num.style.float='right';
+				num.innerText=(buffAttribute[name].eventList[key]>0 ? '+' : '')+buffAttribute[name].eventList[key]+'%';
+				event.appendChild(num);
+
+				eventEffect.appendChild(event);
+			}
 			effect.appendChild(eventEffect);
 		}
 		else if(buffAttribute[name]['type']=='produce')
 		{
 			var produceEffect=document.createElement('div');
 			produceEffect.style.marginLeft='15px';
-			produceEffect.innerText=buffAttribute[name]['workerName']+':  '+((buffAttribute[name]['effect']>0) ? '+'+buffAttribute[name]['effect'] : buffAttribute[name]['effect'])+'%';
+
+			for(var key in buffAttribute[name].workerName)
+			{
+				var worker=document.createElement('div');
+				if(key=='all')
+					worker.innerText='全体:'
+				else
+					worker.innerText=workerZh[key]+':';
+
+				var num=document.createElement('div');
+				num.style.float='right';
+				num.innerText=(buffAttribute[name].workerName[key]>0 ? '+' :'')+buffAttribute[name].workerName[key]+'%';
+				worker.appendChild(num);
+
+				produceEffect.appendChild(worker);
+			}
+
 			effect.appendChild(produceEffect);
 		}
 		rectangle.appendChild(effect);
-
-		var content=document.createElement('div');
-		content.innerText='content:  '+buffAttribute[name]['content'];
-		rectangle.appendChild(content);
 
 		document.getElementById(buffAttribute[name]['type']+'Buff'+name.replace(/^\w/, c => c.toUpperCase())).appendChild(rectangle);
 	}
@@ -323,13 +425,13 @@ function wareMsOn(eventName,ware)
 		rectangle.style.whiteSpace='nowrap';
 
 		var text=document.createElement('div');
-		text.innerText='cost:';
+		text.innerText='需要:';
 		rectangle.appendChild(text);
 
 		for(var key in tradeEventWare[eventName][ware].cost)
 		{
 			var cost=document.createElement('div');
-			cost.innerText=key+':'+tradeEventWare[eventName][ware].cost[key];
+			cost.innerHTML=productionZh[key]+':&nbsp;&nbsp;&nbsp;&nbsp;'+tradeEventWare[eventName][ware].cost[key];
 			rectangle.appendChild(cost);
 		}
 		document.getElementById(eventName+'_'+ware).appendChild(rectangle);
@@ -348,25 +450,38 @@ function craftMsOn(itemName)
 		rectangle.className='rectangle';
 		rectangle.id='craft_'+itemName+'Detail';
 		rectangle.style.whiteSpace='nowrap';
+		rectangle.style.minWidth='120px';
 
 		var text=document.createElement('div');
 		text.innerText=itemAttribute[itemName].text;
 		rectangle.appendChild(text);
 
 		var needContainer=document.createElement('div');
-		needContainer.innerText='need:';
+		needContainer.innerText='需要:';
 		rectangle.appendChild(needContainer);
 
 		for(var key in itemAttribute[itemName].need)
 		{
 			var need=document.createElement('div');
 			need.style.marginLeft='15px';
-			need.innerText=key+': '+itemAttribute[itemName].need[key];
+			need.innerText=productionZh[key]+': ';
+
+			var num=document.createElement('div');
+			num.className='buildRctNum';
+			num.innerText=itemAttribute[itemName].need[key];
+			need.appendChild(num);
+
 			needContainer.appendChild(need);
 		}
 
 		var time=document.createElement('div');
-		time.innerText='costTime: '+(itemAttribute[itemName].time>0? itemAttribute[itemName].time : '0')  +'s';
+		time.innerText='制造时间: ';
+
+		var num=document.createElement('div');
+		num.className='buildRctNum';
+		num.innerText=(itemAttribute[itemName].time>0? itemAttribute[itemName].time : '0')  +'s';
+		time.appendChild(num);
+		
 		rectangle.appendChild(time);
 
 		document.getElementById(itemName).appendChild(rectangle);

@@ -6,11 +6,23 @@ function buffDisable(name)
 		document.getElementById(buffAttribute[name]['type']+'Buff'+name.replace(/^\w/, c => c.toUpperCase())).style.color='grey';
 		if(buffAttribute[name]['type']=='event')
 		{
-			buffAttribute[name]['eventName']!=null ? eventsAttribute[buffAttribute[name]['eventName']]['probability']-=buffAttribute[name]['effect'] : cTypePr[buffAttribute[name]['typeName']]-=buffAttribute[name]['effect'];
+			for(var key in buffAttribute[name].eventList)
+				eventsAttribute[key].probability-=buffAttribute[name].eventList[key];
+			for(var key in buffAttribute[name].typeList)
+				cTypePr[key]-=buffAttribute[name].typeList[key];
 		}
 		else if(buffAttribute[name]['type']=='produce')
 		{
-			workerEfficient[buffAttribute[name]['workerName']]-=buffAttribute[name]['effect'];
+			for(var key in buffAttribute[name].workerName)
+			{
+				if(key=='all')
+				{
+					for(var keyw in workerEfficient)
+						workerEfficient[keyw]-=buffAttribute[name].workerName[key];
+					continue;
+				}
+				workerEfficient[key]-=buffAttribute[name].workerName[key];
+			}
 			productionVariation('buff',null,null);
 		}
 		else if(buffAttribute[name]['type']=='population')
@@ -30,12 +42,23 @@ function buffAble(name)
 		document.getElementById(buffAttribute[name]['type']+'Buff'+name.replace(/^\w/, c => c.toUpperCase())).style.color='';
 		if(buffAttribute[name]['type']=='event')
 		{
-			buffAttribute[name]['eventName']!=null ? eventsAttribute[buffAttribute[name]['eventName']]['probability']+=buffAttribute[name]['effect'] : cTypePr[buffAttribute[name]['typeName']]+=buffAttribute[name]['effect'];
+			for(var key in buffAttribute[name].eventList)
+				eventsAttribute[key].probability+=buffAttribute[name].eventList[key];
+			for(var key in buffAttribute[name].typeList)
+				cTypePr[key]+=buffAttribute[name].typeList[key];
 		}
 		else if(buffAttribute[name]['type']=='produce')
 		{
-			workerEfficient[buffAttribute[name]['workerName']]+=buffAttribute[name]['effect'];
-			productionVariation('buff',null,null);
+			for(var key in buffAttribute[name].workerName)
+			{
+				if(key=='all')
+				{
+					for(var keyw in workerEfficient)
+						workerEfficient[keyw]+=buffAttribute[name].workerName[key];
+					continue;
+				}
+				workerEfficient[key]+=buffAttribute[name].workerName[key];
+			}
 		}
 		else if(buffAttribute[name]['type']=='population')
 		{
@@ -54,11 +77,23 @@ function removeBuff(name)
 	buffAttribute[name]['working']=0;
 	if(buffAttribute[name]['type']=='event')
 	{
-		buffAttribute[name]['eventName']!=null ? eventsAttribute[buffAttribute[name]['eventName']]['probability']-=buffAttribute[name]['effect'] : cTypePr[buffAttribute[name]['typeName']]-=buffAttribute[name]['effect'];
+		for(var key in buffAttribute[name].eventList)
+				eventsAttribute[key].probability-=buffAttribute[name].eventList[key];
+		for(var key in buffAttribute[name].typeList)
+			cTypePr[key]-=buffAttribute[name].typeList[key];
 	}
 	else if(buffAttribute[name]['type']=='produce')
 	{
-		workerEfficient[buffAttribute[name]['workerName']]-=buffAttribute[name]['effect'];
+		for(var key in buffAttribute[name].workerName)
+		{
+			if(key=='all')
+			{
+				for(var keyw in workerEfficient)
+					workerEfficient[keyw]-=buffAttribute[name].workerName[key];
+				continue;
+			}
+			workerEfficient[key]-=buffAttribute[name].workerName[key];
+		}
 		productionVariation('buff',null,null);
 	}
 	else if(buffAttribute[name]['type']=='population')
@@ -80,10 +115,10 @@ function addBuff(name)
 		{
 			buffAttribute[name]['condition']=1;
 			buffAttribute[name]['working']=1;
-			if(buffAttribute[name]['eventName']!=null)
-				eventsAttribute[buffAttribute[name]['eventName']]['probability']+=buffAttribute[name]['effect'];
-			else if(buffAttribute[name]['eventName']==null)
-				cTypePr[buffAttribute[name]['typeName']]+=buffAttribute[name]['effect'];
+			for(var key in buffAttribute[name].eventList)
+				eventsAttribute[key].probability+=buffAttribute[name].eventList[key];
+			for(var key in buffAttribute[name].typeList)
+				cTypePr[key]+=buffAttribute[name].typeList[key];
 			var buffDiv=document.createElement('div');//创建新buff 元素
 			buffDiv.setAttribute('id','eventBuff'+name.replace(/^\w/, c => c.toUpperCase()));
 			buffDiv.setAttribute('onmouseover',`buffMsOn('${name}')`);
@@ -101,7 +136,10 @@ function addBuff(name)
 			{
 				setTimeout(function(name){
 					document.getElementById('eventBuff'+name.replace(/^\w/, c => c.toUpperCase())).remove();
-					buffAttribute[name]['eventName'] != null ? eventsAttribute[buffAttribute[name]['eventName']]['probability']-=buffAttribute[name]['effect'] : cTypePr[buffAttribute[name]['typeName']] -= buffAttribute[name]['effect'];
+					for(var key in buffAttribute[name].eventList)
+						eventsAttribute[key].probability-=buffAttribute[name].eventList[key];
+					for(var key in buffAttribute[name].typeList)
+						cTypePr[key]-=buffAttribute[name].typeList[key];
 					buffAttribute[name]['condition']=0
 				},buffAttribute[name]['duration']*1000*60,name);
 				//写这个破 时间结束就删除的玩意花了我一个晚上 
@@ -115,7 +153,17 @@ function addBuff(name)
 		{
 			buffAttribute[name]['condition']=1;
 			buffAttribute[name]['working']=1;
-			workerEfficient[buffAttribute[name]['workerName']]+=buffAttribute[name]['effect'];
+			//workerEfficient[buffAttribute[name]['workerName']]+=buffAttribute[name]['effect'];
+			for(var key in buffAttribute[name].workerName)
+			{
+				if(key=='all')
+				{
+					for(var keyw in workerEfficient)
+						workerEfficient[keyw]+=buffAttribute[name].workerName[key];
+					continue;
+				}
+				workerEfficient[key]+=buffAttribute[name].workerName[key];
+			}
 			var buffDiv=document.createElement('div');//创建新buff 元素
 			buffDiv.setAttribute('id','produceBuff'+name.replace(/^\w/, c => c.toUpperCase()));
 			buffDiv.setAttribute('onmouseover',`buffMsOn('${name}')`);
@@ -131,8 +179,18 @@ function addBuff(name)
 
 			if(buffAttribute[name]['duration']!=-1)
 			{
-				setTimeout(function(name){document.getElementById('produceBuff'+name.replace(/^\w/, c => c.toUpperCase())).remove();
-					workerEfficient[buffAttribute[name]['workerName']]-=buffAttribute[name]['effect'];
+				setTimeout(function(name){
+					document.getElementById('produceBuff'+name.replace(/^\w/, c => c.toUpperCase())).remove();
+					for(var key in buffAttribute[name].workerName)
+					{
+						if(key=='all')
+						{
+							for(var keyw in workerEfficient)
+								workerEfficient[keyw]-=buffAttribute[name].workerName[key];
+							continue;
+						}
+						workerEfficient[key]-=buffAttribute[name].workerName[key];
+					}
 					buffAttribute[name]['condition']=0}
 				,buffAttribute[name]['duration']*1000*60,name);
 				//写这个破 时间结束就删除的玩意花了我一个晚上 

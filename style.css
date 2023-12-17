@@ -169,8 +169,9 @@ body/*双击或拖动文本不会将其标蓝*/
 	min-width: '1px';
 	left:28px;
 	/*top: 100%;*/
-	background-color: black;
-	color: white; /* 字体颜色为白色 */
+	background-color: white;
+	color: black; /* 字体颜色为白色 */
+	border: 1px solid black;
 	display: flex;
 	display: inline-block;
 	padding: 5px;
@@ -364,4 +365,10 @@ body/*双击或拖动文本不会将其标蓝*/
 	background-color: white;
 	padding: 5px;
 	margin-left: 10px;
+}
+.buildRctNum
+{
+	float: right;
+	margin-top: 3px;
+	margin-right: 5px;
 }

@@ -174,6 +174,8 @@ function eventsDisplay(eventName)
 	newEventAble();//首先检测是否有新事件可用
 	if(eventName==null)
 		eventName=randomEventSelctor();
+	if(eventName==null)//这种情况大概是randomEventSelctor搞出来了空事件
+		return;
 	if((eventsAttribute[eventName]['available']==1&&document.querySelectorAll('.eventPopup').length==0)||(eventsAttribute[eventName]['available']==null))
 	{
 		eventsAttribute[eventName]['displayed']=1;

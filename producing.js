@@ -70,7 +70,7 @@ function produce()
 			}
 			if(enoughProJudge)
 				for(const keyp in workersTable[keyw])
-					actualWrkNum[keyw]=worker[keyw],production[keyp]+=workersTable[keyw][keyp]*workerEfficient[keyw]/100;
+					actualWrkNum[keyw]=worker[keyw],production[keyp]+=workersTable[keyw][keyp]*(Math.max(workerEfficient[keyw],0))/100;
 		}
 	}//当初始worker!=0时可能会有bug?
 	for(var key in popNeed)
@@ -225,7 +225,7 @@ function productionVariation()//工人或buff  序号  工人数量
 		for(var keyp in workersTable[keyw])
 		{
 			if(workersTable[keyw][keyp]>0)
-				produceResult[keyp]+=actualWrkNum[keyw]*workersTable[keyw][keyp]*workerEfficient[keyw]/100;
+				produceResult[keyp]+=actualWrkNum[keyw]*workersTable[keyw][keyp]*(Math.max(workerEfficient[keyw],0))/100;
 			else if(workersTable[keyw][keyp]<0)
 				produceResult[keyp]+=actualWrkNum[keyw]*workersTable[keyw][keyp];
 		}

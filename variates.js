@@ -52,6 +52,12 @@ var workerZh={
 	worker2:'工人2',
 	worker3:'工人3'
 }
+var workerContent={//介绍
+	builder:'建造建筑',
+	worker1:'在林子里翻翻找找',
+	worker2:'工人2',
+	worker3:'工人3'
+}
 var workersTable={// 注意此变量的一级下标worker1,worker2等等必须与worker完全相同
 	builder:{//二级下标product1Num,product2Num等等必须与production完全相同
 		product1Num:0,
@@ -85,10 +91,7 @@ var buildingAttribute={
 		display:1,
 		num:0,
 		need:{
-			product1Num:0,
 			product2Num:5,
-			product3Num:0,
-			product4Num:0
 			},
 		preResearch:null,
 		preBuilding:[],
@@ -104,12 +107,7 @@ var buildingAttribute={
 		type:2,
 		display:0,
 		num:0,
-		need:{
-			product1Num:0,
-			product2Num:0,
-			product3Num:0,
-			product4Num:0
-			},
+		need:{},
 		preResearch:null,
 		preBuilding:['building4'],
 		builderNeed:1,
@@ -125,10 +123,7 @@ var buildingAttribute={
 		display:0,
 		num:0,
 		need:{
-			product1Num:0,
 			product2Num:1,
-			product3Num:0,
-			product4Num:0
 			},
 		preResearch:['research2'],
 		preBuilding:[],
@@ -145,10 +140,7 @@ var buildingAttribute={
 		display:0,
 		num:0,
 		need:{
-			product1Num:0,
 			product2Num:1,
-			product3Num:0,
-			product4Num:0
 			},
 		preResearch:['research2'],
 		preBuilding:[],
@@ -165,10 +157,7 @@ var buildingAttribute={
 		display:1,
 		num:0,
 		need:{
-			product1Num:0,
 			product2Num:1,
-			product3Num:0,
-			product4Num:0
 			},
 		preResearch:null,
 		preBuilding:[],
@@ -186,12 +175,7 @@ var buildingAttribute={
 		type:5,
 		display:0,
 		num:0,
-		need:{
-			product1Num:0,
-			product2Num:0,
-			product3Num:0,
-			product4Num:0
-			},
+		need:{},
 		preResearch:null,
 		preBuilding:[],
 		builderNeed:0,
@@ -627,8 +611,11 @@ var buffAttribute={
 		type:'event',
 		name:'加成1',
 		content:'event1 pos decrease',
-		eventName:'event1',
-		effect:-100,
+		eventList:{
+			event1:-100,
+			event2:100
+		},
+		typeList:{},
 		duration:-1,
 		condition:0,
 		working:0
@@ -638,8 +625,10 @@ var buffAttribute={
 		type:'event',
 		name:'加成2',
 		content:'event2 pos increase',
-		eventName:'event2',
-		effect:100,
+		eventList:{},
+		typeList:{
+			type1:50
+		},
 		duration:-1,
 		condition:0,
 		working:0
@@ -649,8 +638,11 @@ var buffAttribute={
 		type:'produce',
 		name:'加成3',
 		content:'increase wrk1 efficient',
-		workerName:'worker1',
-		effect:150,
+		workerName:
+		{
+			worker1: 100,
+			worker2: 100
+		},
 		duration:-1,
 		condition:0,
 		working:0
@@ -660,7 +652,7 @@ var buffAttribute={
 		type:'produce',
 		name:'加成4',
 		content:'decrease wrk3 efficient',
-		workerName:'worker3',
+		workerName:{all:100,worker1:-50},
 		effect:-100,
 		duration:5,
 		condition:0,
@@ -672,18 +664,6 @@ var buffAttribute={
 		name:'加成5',
 		content:'decrease popIncrease speed',
 		effect:-50,
-		duration:-1,
-		condition:0,
-		working:0
-	},
-	buff6:
-	{
-		type:'event',
-		name:'加成6',
-		content:'event2 pos increase',
-		eventName:null,
-		typeName:'type1',//cType
-		effect:-100,
 		duration:-1,
 		condition:0,
 		working:0
